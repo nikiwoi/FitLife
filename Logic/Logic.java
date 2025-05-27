@@ -118,8 +118,44 @@ public class Logic {
         double beratBadan = s.nextDouble();
         System.out.print("Enter height (cm): ");
         double tinggiBadan = s.nextDouble();
-        System.out.print("Enter exercise difficulty level (Beginner, Intermediate, Advanced): ");
-        String level = s.next();
+        String recommendedLevel = rekomendasiLevel(usia, beratBadan, tinggiBadan);
+        System.out.println("Your BMI is : " + (int) (beratBadan / ((tinggiBadan / 100) * (tinggiBadan / 100))));
+        System.out.println("According to your BMI we recommend : " + "\u001B[32m" + recommendedLevel + "\u001B[0m");
+        System.out.print("Enter exercise difficulty level : ");
+        System.out.println();
+
+        String[] levels = { "Beginner", "Intermediate", "Advanced", "Expert" };
+        for (int i = 0; i < levels.length; i++) {
+            if (levels[i].equalsIgnoreCase(recommendedLevel)) {
+                System.out.println((i + 1) + ". \u001B[32m" + levels[i] + "\u001B[0m");
+            } else {
+                System.out.println((i + 1) + ". " + levels[i]);
+            }
+        }
+        System.out.print("> ");
+        int levelchoice = s.nextInt();
+        String level = null;
+
+        switch (levelchoice) {
+            case 1:
+                System.out.println("You have chosen Beginner level.");
+                level = "Beginner";
+                break;
+            case 2:
+                System.out.println("You have chosen Intermediate level.");
+                level = "Intermediate";
+                break;
+            case 3:
+                System.out.println("You have chosen Advanced level.");
+                level = "Advanced";
+                break;
+            case 4:
+                System.out.println("You have chosen Expert level.");
+                level = "Expert";
+                break;
+            default:
+                break;
+        }
 
         User newUser = new User(username, password, usia, beratBadan, tinggiBadan, level);
         UserList.add(newUser);
@@ -138,6 +174,21 @@ public class Logic {
             System.out.println("Registration successful!");
         } catch (IOException e) {
             System.out.println("Failed to save user: " + e.getMessage());
+        }
+    }
+
+    private String rekomendasiLevel(int usia, double beratBadan, double tinggiBadan) {
+        double tinggiMeter = tinggiBadan / 100.0;
+        double bmi = beratBadan / (tinggiMeter * tinggiMeter);
+
+        if (usia < 18 || usia > 50 || bmi < 18.5 || bmi >= 30) {
+            return "Beginner";
+        } else if (bmi >= 18.5 && bmi < 25 && usia >= 18 && usia <= 40) {
+            return "Intermediate";
+        } else if (bmi >= 25 && bmi < 30 && usia >= 18 && usia <= 40) {
+            return "Advanced";
+        } else {
+            return "Beginner";
         }
     }
 }
