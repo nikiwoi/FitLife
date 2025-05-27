@@ -110,6 +110,21 @@ public class Logic {
         System.out.println("=== Register a New Account ===");
         System.out.print("Enter Username: ");
         String username = s.next();
+
+        // Check if username already exists
+        boolean usernameExists = false;
+        for (User user : UserList) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+                usernameExists = true;
+                break;
+            }
+        }
+        if (usernameExists) {
+            System.out.println("Registration Failed! Username already exists.");
+            System.out.println("Please choose a different username.");
+            return;
+        }
+
         System.out.print("Create Password: ");
         String password = s.next();
         System.out.print("Enter Age: ");
