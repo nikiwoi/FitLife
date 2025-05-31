@@ -6,9 +6,9 @@ public class DifficultyLatihan {
     private String difficultyLevel;
     private ArrayList<Latihan> latihanList;
 
-    public DifficultyLatihan(String difficultyLevel, ArrayList<Latihan> latihanList) {
+    public DifficultyLatihan(String difficultyLevel) {
         this.difficultyLevel = difficultyLevel;
-        this.latihanList = latihanList;
+        this.latihanList = new ArrayList<>();
     }
 
     public String getDifficultyLevel() {
@@ -23,8 +23,7 @@ public class DifficultyLatihan {
         return latihanList;
     }
 
-    public void setLatihanList(ArrayList<Latihan> latihanList) {
-        this.latihanList = latihanList;
+    public void addLatihan(Latihan latihan) {
+        latihanList.add(latihan);
     }
-
 }

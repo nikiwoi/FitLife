@@ -3,14 +3,16 @@ package Object;
 public abstract class Latihan {
     protected String namaLatihan;
     protected String deskripsiLatihan;
+    protected String manfaatLatihan;
     protected String tipeLatihan;
     protected String kategoriLatihan;
     protected int kaloriPerLatihan;
 
-    public Latihan(String namaLatihan, String deskripsiLatihan, String tipeLatihan, String kategoriLatihan,
+    public Latihan(String namaLatihan, String deskripsiLatihan, String manfaatLatihan, String tipeLatihan, String kategoriLatihan,
             int kaloriPerLatihan) {
         this.namaLatihan = namaLatihan;
         this.deskripsiLatihan = deskripsiLatihan;
+        this.manfaatLatihan = manfaatLatihan;
         this.tipeLatihan = tipeLatihan;
         this.kategoriLatihan = kategoriLatihan;
         this.kaloriPerLatihan = kaloriPerLatihan;
@@ -30,6 +32,14 @@ public abstract class Latihan {
 
     public void setDeskripsiLatihan(String deskripsiLatihan) {
         this.deskripsiLatihan = deskripsiLatihan;
+    }
+
+    public String getManfaatLatihan() {
+        return manfaatLatihan;
+    }
+
+    public void setManfaatLatihan(String manfaatLatihan) {
+        this.manfaatLatihan = manfaatLatihan;
     }
 
     public String getTipeLatihan() {
@@ -55,5 +65,4 @@ public abstract class Latihan {
     public void setKaloriPerLatihan(int kaloriPerLatihan) {
         this.kaloriPerLatihan = kaloriPerLatihan;
     }
-
 }
