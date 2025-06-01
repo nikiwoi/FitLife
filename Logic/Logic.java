@@ -9,6 +9,7 @@ public class Logic {
     Scanner s = new Scanner(System.in);
     ArrayList<User> UserList = new ArrayList<>();
     public static ArrayList<DifficultyLatihan> allDifficulty = new ArrayList<>();
+    User currentUser = null;
 
     public void run() {
         Initialize();
@@ -20,6 +21,7 @@ public class Logic {
         boolean valid = false;
         int choice = -1;
         do {
+            System.out.println();
             System.out.println("=============================");
             System.out.println("     Welcome to FitLife!     ");
             System.out.println("=============================");
@@ -87,34 +89,43 @@ public class Logic {
     }
 
     public void Login() {
-        System.out.println("=== Login ===");
-        System.out.print("Enter Username: ");
-        String username = s.next();
-        System.out.print("Enter Password: ");
-        String password = s.next();
+        boolean Running = true;
+        do {
+            System.out.println();
+            System.out.println();
+            System.out.println("=== Login ===");
+            System.out.print("Enter Username: ");
+            String username = s.next();
+            System.out.print("Enter Password: ");
+            String password = s.next();
 
-        boolean found = false;
-        for (User user : UserList) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                found = true;
-                break;
+            boolean found = false;
+            for (User user : UserList) {
+                if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                    found = true;
+                    currentUser = user;
+                    break;
+                }
             }
-        }
 
-        if (found) {
-            System.out.println("Login successful! Welcome, " + username + "!");
-            // You can add more logic here for after login
-        } else {
-            System.out.println("Invalid username or password. Please try again.");
-        }
+            if (found) {
+                System.out.println("Login successful! Welcome, " + username + "!");
+                Running = false;
+                menu();
+            } else {
+                System.out.println("Invalid username or password. Please try again.");
+                Running = false;
+            }
+        } while (Running);
     }
 
     public void Register() {
+        System.out.println();
+        System.out.println();
         System.out.println("=== Register a New Account ===");
         System.out.print("Enter Username: ");
         String username = s.next();
 
-        // Check if username already exists
         boolean usernameExists = false;
         for (User user : UserList) {
             if (user.getUsername().equalsIgnoreCase(username)) {
@@ -173,22 +184,12 @@ public class Logic {
 
         User newUser = new User(username, password, usia, beratBadan, tinggiBadan, level);
         UserList.add(newUser);
+        currentUser = newUser;
 
-        String filePath = "./Data/Users.csv";
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
-            String userData = String.join(",",
-                    username,
-                    password,
-                    String.valueOf(usia),
-                    String.valueOf(beratBadan),
-                    String.valueOf(tinggiBadan),
-                    level);
-            bw.write(userData);
-            bw.newLine();
-            System.out.println("Registration successful!");
-        } catch (IOException e) {
-            System.out.println("Failed to save user: " + e.getMessage());
-        }
+        saveUsersToCSV();
+        System.out.println("Registration successful!");
+
+        menu();
     }
 
     private String rekomendasiLevel(int usia, double beratBadan, double tinggiBadan) {
@@ -210,6 +211,8 @@ public class Logic {
         boolean running = true;
         int choice = -1;
         do {
+            System.out.println();
+            System.out.println();
             System.out.println("=============================");
             System.out.println("           FitLife           ");
             System.out.println("=============================");
@@ -240,15 +243,133 @@ public class Logic {
                     // Set Your Weight Target
                     break;
                 case 6:
-                    // Update User Profile
+                    UpdateUserProfile();
                     break;
                 case 7:
-                    // Logout
+                    System.out.println("Logging out...");
+                    System.out.println();
                     running = false;
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
         } while (running);
+    }
+
+    public void UpdateUserProfile() {
+        boolean Running = true;
+        do {
+            System.out.println("=== Update User Profile ===");
+            System.out.println("Your current profile:");
+
+            System.out.println("1. Username: " + currentUser.getUsername());
+            System.out.println("2. Password: " + currentUser.getPassword());
+            System.out.println("3. Age: " + currentUser.getUsia());
+            System.out.println("4. Weight: " + currentUser.getBeratBadan() + " kg");
+            System.out.println("5. Difficulty Level: " + currentUser.getLevel());
+            System.out.println();
+            System.out.println("0. Exit to Main Menu");
+            System.out.print("> ");
+            int choice = s.nextInt();
+            s.nextLine(); // Consume newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter new Username: ");
+                    String newUsername = s.nextLine();
+                    boolean exists = false;
+                    for (User user : UserList) {
+                        if (user != currentUser && user.getUsername().equalsIgnoreCase(newUsername)) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (exists) {
+                        System.out.println("Username already exists. Please choose a different username.");
+                    } else {
+                        currentUser.setUsername(newUsername);
+                        System.out.println("Username updated successfully!");
+                    }
+                    break;
+                case 2:
+                    System.out.print("Enter new Password: ");
+                    String newPassword = s.nextLine();
+                    currentUser.setPassword(newPassword);
+                    System.out.println("Password updated successfully!");
+                    break;
+                case 3:
+                    System.out.print("Enter new Age: ");
+                    int newAge = s.nextInt();
+                    currentUser.setUsia(newAge);
+                    System.out.println("Age updated successfully!");
+                    s.nextLine();
+                    break;
+                case 4:
+                    System.out.print("Enter new Weight (kg): ");
+                    double newWeight = s.nextDouble();
+                    currentUser.setBeratBadan(newWeight);
+                    System.out.println("Weight updated successfully!");
+                    s.nextLine();
+                    break;
+                case 5:
+                    System.out.println("Choose new Difficulty Level:");
+                    String[] levels = { "Beginner", "Intermediate", "Advanced" };
+                    for (int i = 0; i < levels.length; i++) {
+                        System.out.println((i + 1) + ". " + levels[i]);
+                    }
+                    System.out.print("> ");
+                    int levelChoice = s.nextInt();
+                    s.nextLine();
+                    String newLevel = null;
+                    switch (levelChoice) {
+                        case 1:
+                            newLevel = "Beginner";
+                            break;
+                        case 2:
+                            newLevel = "Intermediate";
+                            break;
+                        case 3:
+                            newLevel = "Advanced";
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Difficulty not changed.");
+                            break;
+                    }
+                    if (newLevel != null) {
+                        currentUser.setLevel(newLevel);
+                        System.out.println("Difficulty Level updated successfully!");
+                    }
+                    break;
+                case 0:
+                    Running = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+            System.out.println();
+            System.out.println();
+            saveUsersToCSV();
+
+        } while (Running);
+
+    }
+
+    private void saveUsersToCSV() {
+        String filePath = "./Data/Users.csv";
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, false))) {
+            for (User user : UserList) {
+                String userData = String.join(",",
+                        user.getUsername(),
+                        user.getPassword(),
+                        String.valueOf(user.getUsia()),
+                        String.valueOf(user.getBeratBadan()),
+                        String.valueOf(user.getTinggiBadan()),
+                        user.getLevel());
+                bw.write(userData);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to update users: " + e.getMessage());
+        }
     }
 }
