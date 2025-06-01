@@ -221,7 +221,7 @@ public class Logic {
             System.out.println("=============================");
             System.out.println("1. Generate Today's Workout");
             System.out.println("2. Generate This Week's Workout");
-            System.out.println("3. View Calories Burned");
+            System.out.println("3. View Calories Burnt");
             System.out.println("4. View Workout History");
             System.out.println("5. Set Your Weight Target");
             System.out.println("6. Update User Profile");
@@ -237,7 +237,7 @@ public class Logic {
                     // Generate This Week's Workout
                     break;
                 case 3:
-                    // View Calories Burned
+                    ViewCaloriesBurnt();
                     break;
                 case 4:
                     showWorkoutHistory();
@@ -549,5 +549,65 @@ public class Logic {
         } catch (IOException e) {
             System.out.println("Failed to update users: " + e.getMessage());
         }
+    }
+
+    public void ViewCaloriesBurnt() {
+        System.out.println();
+        System.out.println("=== Total Calories Burned ===");
+        String filePath = "./Data/" + currentUser.getUsername() + "_history.txt";
+        File historyFile = new File(filePath);
+        if (!historyFile.exists()) {
+            System.out.println("No workout history found.");
+            return;
+        }
+
+        int totalCalories = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                // Match lines like: 1. Exercise Name (20 reps)
+                if (line.matches("\\d+\\. .+\\(\\d+ reps\\)")) {
+                    // Extract exercise name and reps
+                    int idxStart = line.indexOf(". ") + 2;
+                    int idxParen = line.lastIndexOf(" (");
+                    String namaLatihan = line.substring(idxStart, idxParen).trim();
+                    int reps = Integer.parseInt(line.substring(line.lastIndexOf("(") + 1, line.lastIndexOf(" reps")));
+                    Latihan latihan = findLatihanByName(namaLatihan);
+                    if (latihan instanceof RepetitionLatihan) {
+                        int kaloriPerLatihan = latihan.getKaloriPerLatihan();
+                        totalCalories += reps * kaloriPerLatihan;
+                    }
+                } else if (line.matches("\\d+\\. .+\\(\\d+ seconds\\)")) {
+                    // Extract exercise name and seconds
+                    int idxStart = line.indexOf(". ") + 2;
+                    int idxParen = line.lastIndexOf(" (");
+                    String namaLatihan = line.substring(idxStart, idxParen).trim();
+                    int seconds = Integer.parseInt(line.substring(line.lastIndexOf("(") + 1, line.lastIndexOf(" seconds")));
+                    Latihan latihan = findLatihanByName(namaLatihan);
+                    if (latihan instanceof DurationLatihan) {
+                        int kaloriPerLatihan = latihan.getKaloriPerLatihan();
+                        totalCalories += seconds * kaloriPerLatihan;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to read workout history: " + e.getMessage());
+            return;
+        }
+
+        System.out.println("You have burned a total of " + totalCalories + " calories!");
+    }
+
+    // Helper function to find Latihan by name from allDifficulty
+    private Latihan findLatihanByName(String namaLatihan) {
+        for (DifficultyLatihan diff : allDifficulty) {
+            for (Latihan l : diff.getLatihanList()) {
+                if (l.getNamaLatihan().equalsIgnoreCase(namaLatihan)) {
+                    return l;
+                }
+            }
+        }
+        return null;
     }
 }
