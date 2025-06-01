@@ -282,21 +282,30 @@ public class Logic {
             }
         }
 
-        Collections.shuffle(warmUp);
         Collections.shuffle(mainWorkout);
-        Collections.shuffle(cooldown);
         
+        int WarmUpCount = 3;
         int MainWorkoutCount = 0;
+        int CooldownCount = 2;
+
         if (currentUser.getLevel().equalsIgnoreCase("Beginner")) {
+            WarmUpCount = 2;
             MainWorkoutCount = 5;
+            CooldownCount = 2;
         } else if (currentUser.getLevel().equalsIgnoreCase("Intermediate")) {
+            WarmUpCount = 3;
             MainWorkoutCount = 6;
+            CooldownCount = 3;
         } else if (currentUser.getLevel().equalsIgnoreCase("Advanced")) {
+            WarmUpCount = 4;
             MainWorkoutCount = 7;
+            CooldownCount = 4;
         }
-        System.out.println("Today's Workout Plan:");
+
+        System.out.println("=== Today's Workout Plan ===");
+        System.out.println();
         System.out.println("Warm-Up:");
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < WarmUpCount; i++) {
             if (warmUp.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
                 System.out.println((i + 1) + ". " + warmUp.get(i).getNamaLatihan() + " ("
                         + ((RepetitionLatihan) warmUp.get(i)).getRepetition() + " reps)");
@@ -305,6 +314,7 @@ public class Logic {
                         + ((DurationLatihan) warmUp.get(i)).getDuration() + " seconds)");
             }
         }
+        System.out.println();
         System.out.println("Main Workout:");
         for (int i = 0; i < MainWorkoutCount; i++) {
             if (mainWorkout.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
@@ -315,8 +325,9 @@ public class Logic {
                         + ((DurationLatihan) mainWorkout.get(i)).getDuration() + " seconds)");
             }
         }
+        System.out.println();
         System.out.println("Cooldown:");
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < CooldownCount; i++) {
             if (cooldown.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
                 System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan() + " ("
                         + ((RepetitionLatihan) cooldown.get(i)).getRepetition() + " reps)");
@@ -325,6 +336,9 @@ public class Logic {
                         + ((DurationLatihan) cooldown.get(i)).getDuration() + " seconds)");
             }
         }
+    }
+    public void GenerateLatihanThisWeek() {
+
     }
 
     public void SetWeightTarget() {
