@@ -10,6 +10,12 @@ public class Logic {
     ArrayList<User> UserList = new ArrayList<>();
     public static ArrayList<DifficultyLatihan> allDifficulty = new ArrayList<>();
     User currentUser = null;
+    ArrayList<Latihan> warmUp = new ArrayList<>();
+    ArrayList<Latihan> mainWorkout = new ArrayList<>();
+    ArrayList<Latihan> cooldown = new ArrayList<>();
+    int WarmUpCount = 3;
+    int MainWorkoutCount = 0;
+    int CooldownCount = 2;
 
     public void run() {
         Initialize();
@@ -234,7 +240,7 @@ public class Logic {
                     GenerateLatihanToday();
                     break;
                 case 2:
-                    // Generate This Week's Workout
+                    GenerateLatihanThisWeek();
                     break;
                 case 3:
                     // View Calories Burned
@@ -259,11 +265,7 @@ public class Logic {
         } while (running);
     }
 
-    public void GenerateLatihanToday() {
-        ArrayList<Latihan> warmUp = new ArrayList<>();
-        ArrayList<Latihan> mainWorkout = new ArrayList<>();
-        ArrayList<Latihan> cooldown = new ArrayList<>();
-
+    public void GenerateLatihan() {
         DifficultyLatihan selected = null;
         for (DifficultyLatihan diff : allDifficulty) {
             if (diff.getDifficultyLevel().equalsIgnoreCase(currentUser.getLevel())) {
@@ -281,13 +283,12 @@ public class Logic {
                 cooldown.add(latihan);
             }
         }
+    }
+
+    public void GenerateLatihanToday() {
+        GenerateLatihan();
 
         Collections.shuffle(mainWorkout);
-        
-        int WarmUpCount = 3;
-        Collections.shuffle(cooldown);
-        int MainWorkoutCount = 0;
-        int CooldownCount = 2;
 
         if (currentUser.getLevel().equalsIgnoreCase("Beginner")) {
             WarmUpCount = 2;
@@ -340,6 +341,25 @@ public class Logic {
 
         String workoutSummary = generateWorkoutSummary(warmUp, mainWorkout, cooldown, MainWorkoutCount);
         saveWorkoutHistory(currentUser.getUsername(), workoutSummary);
+    }
+
+    public void GenerateLatihanThisWeek() {
+        GenerateLatihan();
+        System.out.println(" === This Week's Workout ===");
+        for (int i = 0; i < 7; i++) {
+            System.out.println("--- Day " + (i + 1) + " ---");
+            for (int j = 0; j < MainWorkoutCount; j++) {
+                if (mainWorkout.get(j).getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                    System.out.println((j + 1) + ". " + mainWorkout.get(j).getNamaLatihan() + " ("
+                            + ((RepetitionLatihan) mainWorkout.get(j)).getRepetition() + " reps)");
+                } else if (mainWorkout.get(j).getTipeLatihan().equalsIgnoreCase("Duration")) {
+                    System.out.println((j + 1) + ". " + mainWorkout.get(j).getNamaLatihan() + " ("
+                            + ((DurationLatihan) mainWorkout.get(j)).getDuration() + " seconds)");
+                }
+            }
+            Collections.shuffle(mainWorkout);
+            System.out.println();
+        }
     }
 
     private String generateWorkoutSummary(List<Latihan> warmUp, List<Latihan> mainWorkout, List<Latihan> cooldown,
@@ -415,9 +435,6 @@ public class Logic {
         } catch (IOException e) {
             System.out.println("Failed to read workout history: " + e.getMessage());
         }
-    }
-    public void GenerateLatihanThisWeek() {
-
     }
 
     public void SetWeightTarget() {
