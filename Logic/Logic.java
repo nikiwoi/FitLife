@@ -240,7 +240,7 @@ public class Logic {
                     // View Calories Burned
                     break;
                 case 4:
-                    // View Workout History
+                    showWorkoutHistory();
                     break;
                 case 5:
                     SetWeightTarget();
@@ -271,7 +271,7 @@ public class Logic {
                 break;
             }
         }
-        
+
         for (Latihan latihan : selected.getLatihanList()) {
             if (latihan.getKategoriLatihan().equalsIgnoreCase("WarmUp")) {
                 warmUp.add(latihan);
@@ -285,6 +285,7 @@ public class Logic {
         Collections.shuffle(mainWorkout);
         
         int WarmUpCount = 3;
+        Collections.shuffle(cooldown);
         int MainWorkoutCount = 0;
         int CooldownCount = 2;
 
@@ -335,6 +336,84 @@ public class Logic {
                 System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan() + " ("
                         + ((DurationLatihan) cooldown.get(i)).getDuration() + " seconds)");
             }
+        }
+
+        String workoutSummary = generateWorkoutSummary(warmUp, mainWorkout, cooldown, MainWorkoutCount);
+        saveWorkoutHistory(currentUser.getUsername(), workoutSummary);
+    }
+
+    private String generateWorkoutSummary(List<Latihan> warmUp, List<Latihan> mainWorkout, List<Latihan> cooldown,
+            int mainWorkoutCount) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Workout Date: ").append(new Date()).append("\n");
+        sb.append("Warm-Up:\n");
+        for (int i = 0; i < 3; i++) {
+            Latihan l = warmUp.get(i);
+            if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                        .append(((RepetitionLatihan) l).getRepetition()).append(" reps)\n");
+            } else if (l.getTipeLatihan().equalsIgnoreCase("Duration")) {
+                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                        .append(((DurationLatihan) l).getDuration()).append(" seconds)\n");
+            }
+        }
+        sb.append("Main Workout:\n");
+        for (int i = 0; i < mainWorkoutCount; i++) {
+            Latihan l = mainWorkout.get(i);
+            if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                        .append(((RepetitionLatihan) l).getRepetition()).append(" reps)\n");
+            } else if (l.getTipeLatihan().equalsIgnoreCase("Duration")) {
+                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                        .append(((DurationLatihan) l).getDuration()).append(" seconds)\n");
+            }
+        }
+        sb.append("Cooldown:\n");
+        for (int i = 0; i < 2; i++) {
+            Latihan l = cooldown.get(i);
+            if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                        .append(((RepetitionLatihan) l).getRepetition()).append(" reps)\n");
+            } else if (l.getTipeLatihan().equalsIgnoreCase("Duration")) {
+                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                        .append(((DurationLatihan) l).getDuration()).append(" seconds)\n");
+            }
+        }
+        sb.append("====================================\n");
+        return sb.toString();
+    }
+
+    private void saveWorkoutHistory(String username, String workoutSummary) {
+        String filePath = "./Data/" + username + "_history.txt";
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
+            bw.write(workoutSummary);
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("Failed to save workout history: " + e.getMessage());
+        }
+    }
+
+    public void showWorkoutHistory() {
+        System.out.println();
+        System.out.println("=== Workout History ===");
+        String filePath = "./Data/" + currentUser.getUsername() + "_history.txt";
+        File historyFile = new File(filePath);
+        if (!historyFile.exists()) {
+            System.out.println("No workout history found.");
+            return;
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+            String line;
+            boolean hasHistory = false;
+            while ((line = br.readLine()) != null) {
+                hasHistory = true;
+                System.out.println(line);
+            }
+            if (!hasHistory) {
+                System.out.println("No workout history found.");
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to read workout history: " + e.getMessage());
         }
     }
     public void GenerateLatihanThisWeek() {
