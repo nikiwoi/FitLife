@@ -211,7 +211,7 @@ public class Logic {
         int choice = -1;
         do {
             System.out.println("=============================");
-            System.out.println("     FitLife Main Menu      ");
+            System.out.println("           FitLife           ");
             System.out.println("=============================");
             System.out.println("1. Generate Today's Workout");
             System.out.println("2. Generate This Week's Workout");
