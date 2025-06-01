@@ -71,14 +71,15 @@ public class Logic {
                 if (line.trim().isEmpty())
                     continue;
                 String[] parts = line.split(",");
-                if (parts.length == 6) {
+                if (parts.length == 7) {
                     String username = parts[0];
                     String password = parts[1];
                     int usia = Integer.parseInt(parts[2]);
                     double beratBadan = Double.parseDouble(parts[3]);
                     double tinggiBadan = Double.parseDouble(parts[4]);
                     String level = parts[5];
-                    UserList.add(new User(username, password, usia, beratBadan, tinggiBadan, level));
+                    int targetWeight = Integer.parseInt(parts[6]);
+                    UserList.add(new User(username, password, usia, beratBadan, tinggiBadan, level, targetWeight));
                 }
             }
         } catch (IOException e) {
@@ -147,6 +148,8 @@ public class Logic {
         double beratBadan = s.nextDouble();
         System.out.print("Enter height (cm): ");
         double tinggiBadan = s.nextDouble();
+        System.out.print("Enter your target weight (kg): ");
+        int targetWeight = s.nextInt();
         String recommendedLevel = rekomendasiLevel(usia, beratBadan, tinggiBadan);
         System.out.println("Your BMI is : " + (int) (beratBadan / ((tinggiBadan / 100) * (tinggiBadan / 100))));
         System.out.println("According to your BMI we recommend : " + "\u001B[32m" + recommendedLevel + "\u001B[0m");
@@ -182,7 +185,7 @@ public class Logic {
                 break;
         }
 
-        User newUser = new User(username, password, usia, beratBadan, tinggiBadan, level);
+        User newUser = new User(username, password, usia, beratBadan, tinggiBadan, level, targetWeight);
         UserList.add(newUser);
         currentUser = newUser;
 
@@ -240,7 +243,7 @@ public class Logic {
                     // View Workout History
                     break;
                 case 5:
-                    // Set Your Weight Target
+                    SetWeightTarget();
                     break;
                 case 6:
                     UpdateUserProfile();
@@ -256,9 +259,22 @@ public class Logic {
         } while (running);
     }
 
+    public void SetWeightTarget() {
+        System.out.println();
+        System.out.println("=== Set Your Weight Target ===");
+        System.out.println("Your current weight: " + currentUser.getBeratBadan() + " kg");
+        System.out.println("==============================");
+        System.out.print("Enter your target weight (kg): ");
+        int targetWeight = s.nextInt();
+        currentUser.setTargetWeight(targetWeight);
+        System.out.println("Your target weight has been set to " + targetWeight + " kg.");
+        saveUsersToCSV();
+    }
+
     public void UpdateUserProfile() {
         boolean Running = true;
         do {
+            System.out.println();
             System.out.println("=== Update User Profile ===");
             System.out.println("Your current profile:");
 
@@ -271,7 +287,7 @@ public class Logic {
             System.out.println("0. Exit to Main Menu");
             System.out.print("> ");
             int choice = s.nextInt();
-            s.nextLine(); // Consume newline character
+            s.nextLine();
 
             switch (choice) {
                 case 1:
@@ -364,7 +380,9 @@ public class Logic {
                         String.valueOf(user.getUsia()),
                         String.valueOf(user.getBeratBadan()),
                         String.valueOf(user.getTinggiBadan()),
-                        user.getLevel());
+                        user.getLevel(),
+                        String.valueOf(user.getTargetWeight())
+                );
                 bw.write(userData);
                 bw.newLine();
             }

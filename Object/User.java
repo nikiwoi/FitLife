@@ -7,14 +7,16 @@ public class User {
     private double beratBadan;
     private double tinggiBadan;
     private String level;
+    private int targetWeight;
 
-    public User(String username, String password, int usia, double beratBadan, double tinggiBadan, String level) {
+    public User(String username, String password, int usia, double beratBadan, double tinggiBadan, String level, int targetWeight) {
         this.username = username;
         this.password = password;
         this.usia = usia;
         this.beratBadan = beratBadan;
         this.tinggiBadan = tinggiBadan;
         this.level = level;
+        this.targetWeight = targetWeight;
     }
 
     public String getUsername() {
@@ -63,6 +65,14 @@ public class User {
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    public int getTargetWeight() {
+        return targetWeight;
+    }
+
+    public void setTargetWeight(int targetWeight) {
+        this.targetWeight = targetWeight;
     }
 
 }
