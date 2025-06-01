@@ -9,6 +9,14 @@ public class RepetitionLatihan extends Latihan implements KaloriTracker {
         this.repetition = repetition;
     }
 
+    public int getRepetition() {
+        return repetition;
+    }
+
+    public void setRepetition(int repetition) {
+        this.repetition = repetition;
+    }
+
     @Override
     public int hitungKalori() {
         return repetition * getKaloriPerLatihan();
