@@ -223,9 +223,63 @@ public class Logic {
             System.out.print(">  ");
             choice = s.nextInt();
 
+            ArrayList<Latihan> warmUp = new ArrayList<>();
+            ArrayList<Latihan> mainWorkout = new ArrayList<>();
+            ArrayList<Latihan> cooldown = new ArrayList<>();
+
             switch (choice) {
                 case 1:
-                    // Generate Today's Workout
+                    Random r = new Random();
+                    int randomWarmUp = r.nextInt(5);
+
+                    DifficultyLatihan selected = new DifficultyLatihan(currentUser.getLevel());
+                    for (Latihan latihan : selected.getLatihanList()) {
+                        if (latihan.getKategoriLatihan().equalsIgnoreCase("WarmUp")) {
+                            warmUp.add(latihan);
+                        } else if (latihan.getKategoriLatihan().equalsIgnoreCase("MainWorkout")) {
+                            mainWorkout.add(latihan);
+                        } else if (latihan.getKategoriLatihan().equalsIgnoreCase("Cooldown")) {
+                            cooldown.add(latihan);
+                        }
+                    }
+
+                    Collections.shuffle(warmUp);
+                    Collections.shuffle(mainWorkout);
+                    Collections.shuffle(cooldown);
+                    int[] MainWorkout = {5, 6, 7};
+                    int MainWorkoutCount;
+                    if(currentUser.getLevel().equalsIgnoreCase("Beginner")) {
+                        MainWorkoutCount = 5;
+                    } else if (currentUser.getLevel().equalsIgnoreCase("Intermediate")) {
+                        MainWorkoutCount = 6;
+                    } else if (currentUser.getLevel().equalsIgnoreCase("Advanced") {
+                        MainWorkoutCount = 7;
+                    }
+                    System.out.println("Today's Workout Plan:");
+                    System.out.println("Warm-Up:");
+                    for (int i = 0; i < 3; i++) {
+                        if (warmUp.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                            System.out.println((i + 1) + ". " + warmUp.get(i).getNamaLatihan() + " (" + ((RepetitionLatihan) warmUp.get(i)).getRepetition() + " reps)");
+                        } else if (warmUp.get(i).getTipeLatihan().equalsIgnoreCase("Duration")) {
+                            System.out.println((i + 1) + ". " + warmUp.get(i).getNamaLatihan() + " (" + ((DurationLatihan) warmUp.get(i)).getDuration() + " seconds)");
+                        }
+                    }
+                    System.out.println("Main Workout:");
+                    for (int i = 0; i < MainWorkoutCount; i++) {
+                        if (mainWorkout.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                            System.out.println((i + 1) + ". " + mainWorkout.get(i).getNamaLatihan() + " (" + ((RepetitionLatihan) mainWorkout.get(i)).getRepetition() + " reps)");
+                        } else if (mainWorkout.get(i).getTipeLatihan().equalsIgnoreCase("Duration")) {
+                            System.out.println((i + 1) + ". " + mainWorkout.get(i).getNamaLatihan() + " (" + ((DurationLatihan) mainWorkout.get(i)).getDuration() + " seconds)");
+                        }
+                    }
+                    System.out.println("Cooldown:");
+                    for (int i = 0; i < 2; i++) {
+                        if (cooldown.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                            System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan() + " (" + ((RepetitionLatihan) cooldown.get(i)).getRepetition() + " reps)");
+                        } else if (cooldown.get(i).getTipeLatihan().equalsIgnoreCase("Duration")) {
+                            System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan() + " (" + ((DurationLatihan) cooldown.get(i)).getDuration() + " seconds)");
+                        }
+                    }
                     break;
                 case 2:
                     // Generate This Week's Workout

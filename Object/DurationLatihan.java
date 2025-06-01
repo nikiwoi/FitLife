@@ -8,6 +8,13 @@ public class DurationLatihan extends Latihan implements KaloriTracker {
         super(namaLatihan, deskripsiLatihan, manfaatLatihan, "duration", kategoriLatihan, kaloriPerLatihan);
         this.duration = duration;
     }
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
     @Override
     public int hitungKalori() {
         return duration * getKaloriPerLatihan();
