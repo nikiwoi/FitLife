@@ -235,9 +235,6 @@ public class Logic {
 
             switch (choice) {
                 case 1:
-                    Random r = new Random();
-                    int randomWarmUp = r.nextInt(5);
-
                     DifficultyLatihan selected = new DifficultyLatihan(currentUser.getLevel());
                     for (Latihan latihan : selected.getLatihanList()) {
                         if (latihan.getKategoriLatihan().equalsIgnoreCase("WarmUp")) {
@@ -252,13 +249,12 @@ public class Logic {
                     Collections.shuffle(warmUp);
                     Collections.shuffle(mainWorkout);
                     Collections.shuffle(cooldown);
-                    int[] MainWorkout = {5, 6, 7};
-                    int MainWorkoutCount;
+                    int MainWorkoutCount = 0;
                     if(currentUser.getLevel().equalsIgnoreCase("Beginner")) {
                         MainWorkoutCount = 5;
                     } else if (currentUser.getLevel().equalsIgnoreCase("Intermediate")) {
                         MainWorkoutCount = 6;
-                    } else if (currentUser.getLevel().equalsIgnoreCase("Advanced") {
+                    } else if (currentUser.getLevel().equalsIgnoreCase("Advanced")) {
                         MainWorkoutCount = 7;
                     }
                     System.out.println("Today's Workout Plan:");
