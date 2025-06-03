@@ -231,9 +231,10 @@ public class Logic {
             System.out.println("3. View Calories Burnt");
             System.out.println("4. View Workout History");
             System.out.println("5. Set Your Weight Target");
-            System.out.println("6. Update User Profile");
-            System.out.println("7. Set your Daily Meals");
-            System.out.println("8. Logout");
+            System.out.println("6. Set your Daily Meals");
+            System.out.println("7. Show your Weight Progress");
+            System.out.println("8. Update User Profile");
+            System.out.println("9. Logout");
             System.out.print(">  ");
             choice = s.nextInt();
 
@@ -248,18 +249,21 @@ public class Logic {
                     ViewCaloriesBurnt();
                     break;
                 case 4:
-                    showWorkoutHistory();
+                    ShowWorkoutHistory();
                     break;
                 case 5:
                     SetWeightTarget();
                     break;
                 case 6:
-                    UpdateUserProfile();
+                    CalculateDailyMeals();
                     break;
                 case 7:
-                    calculateDailyMeals();
+                    showWeightProgress();
                     break;
                 case 8:
+                    UpdateUserProfile();
+                    break;
+                case 9:
                     System.out.println("Logging out...");
                     System.out.println();
                     running = false;
@@ -270,7 +274,27 @@ public class Logic {
         } while (running);
     }
 
-    public void GenerateLatihan() {
+    private void saveUsersToCSV() {
+        String filePath = "./Data/Users.csv";
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, false))) {
+            for (User user : UserList) {
+                String userData = String.join(",",
+                        user.getUsername(),
+                        user.getPassword(),
+                        String.valueOf(user.getUsia()),
+                        String.valueOf(user.getBeratBadan()),
+                        String.valueOf(user.getTinggiBadan()),
+                        user.getLevel(),
+                        String.valueOf(user.getTargetWeight()));
+                bw.write(userData);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to update users: " + e.getMessage());
+        }
+    }
+
+    public void generateLatihan() {
         DifficultyLatihan selected = null;
         for (DifficultyLatihan diff : allDifficulty) {
             if (diff.getDifficultyLevel().equalsIgnoreCase(currentUser.getLevel())) {
@@ -291,7 +315,7 @@ public class Logic {
     }
 
     public void GenerateLatihanToday() {
-        GenerateLatihan();
+        generateLatihan();
 
         Collections.shuffle(mainWorkout);
 
@@ -361,7 +385,7 @@ public class Logic {
     }
 
     public void GenerateLatihanThisWeek() {
-        GenerateLatihan();
+        generateLatihan();
         System.out.println(" === This Week's Workout ===");
         for (int i = 0; i < 7; i++) {
             System.out.println("--- Day " + (i + 1) + " ---");
@@ -376,6 +400,90 @@ public class Logic {
             }
             Collections.shuffle(mainWorkout);
             System.out.println();
+        }
+    }
+
+    public void ViewCaloriesBurnt() {
+        System.out.println();
+        System.out.println("=== Total Calories Burned ===");
+        String filePath = "./Data/" + currentUser.getUsername() + "_history.txt";
+        File historyFile = new File(filePath);
+        if (!historyFile.exists()) {
+            System.out.println("No workout history found.");
+            return;
+        }
+
+        int totalCalories = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                // Match lines like: 1. Exercise Name (20 reps)
+                if (line.matches("\\d+\\. .+\\(\\d+ reps\\)")) {
+                    // Extract exercise name and reps
+                    int idxStart = line.indexOf(". ") + 2;
+                    int idxParen = line.lastIndexOf(" (");
+                    String namaLatihan = line.substring(idxStart, idxParen).trim();
+                    int reps = Integer.parseInt(line.substring(line.lastIndexOf("(") + 1, line.lastIndexOf(" reps")));
+                    Latihan latihan = findLatihanByName(namaLatihan);
+                    if (latihan instanceof RepetitionLatihan) {
+                        int kaloriPerLatihan = latihan.getKaloriPerLatihan();
+                        totalCalories += reps * kaloriPerLatihan;
+                    }
+                } else if (line.matches("\\d+\\. .+\\(\\d+ seconds\\)")) {
+                    // Extract exercise name and seconds
+                    int idxStart = line.indexOf(". ") + 2;
+                    int idxParen = line.lastIndexOf(" (");
+                    String namaLatihan = line.substring(idxStart, idxParen).trim();
+                    int seconds = Integer
+                            .parseInt(line.substring(line.lastIndexOf("(") + 1, line.lastIndexOf(" seconds")));
+                    Latihan latihan = findLatihanByName(namaLatihan);
+                    if (latihan instanceof DurationLatihan) {
+                        int kaloriPerLatihan = latihan.getKaloriPerLatihan();
+                        totalCalories += seconds * kaloriPerLatihan;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to read workout history: " + e.getMessage());
+            return;
+        }
+
+        System.out.println("You have burned a total of " + totalCalories + " kcal!");
+    }
+
+    private Latihan findLatihanByName(String namaLatihan) {
+        for (DifficultyLatihan diff : allDifficulty) {
+            for (Latihan l : diff.getLatihanList()) {
+                if (l.getNamaLatihan().equalsIgnoreCase(namaLatihan)) {
+                    return l;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void ShowWorkoutHistory() {
+        System.out.println();
+        System.out.println("=== Workout History ===");
+        String filePath = "./Data/" + currentUser.getUsername() + "_history.txt";
+        File historyFile = new File(filePath);
+        if (!historyFile.exists()) {
+            System.out.println("No workout history found.");
+            return;
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+            String line;
+            boolean hasHistory = false;
+            while ((line = br.readLine()) != null) {
+                hasHistory = true;
+                System.out.println(line);
+            }
+            if (!hasHistory) {
+                System.out.println("No workout history found.");
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to read workout history: " + e.getMessage());
         }
     }
 
@@ -430,30 +538,6 @@ public class Logic {
         }
     }
 
-    public void showWorkoutHistory() {
-        System.out.println();
-        System.out.println("=== Workout History ===");
-        String filePath = "./Data/" + currentUser.getUsername() + "_history.txt";
-        File historyFile = new File(filePath);
-        if (!historyFile.exists()) {
-            System.out.println("No workout history found.");
-            return;
-        }
-        try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
-            String line;
-            boolean hasHistory = false;
-            while ((line = br.readLine()) != null) {
-                hasHistory = true;
-                System.out.println(line);
-            }
-            if (!hasHistory) {
-                System.out.println("No workout history found.");
-            }
-        } catch (IOException e) {
-            System.out.println("Failed to read workout history: " + e.getMessage());
-        }
-    }
-
     public void SetWeightTarget() {
         System.out.println();
         System.out.println("=== Set Your Weight Target ===");
@@ -464,6 +548,88 @@ public class Logic {
         currentUser.setTargetWeight(targetWeight);
         System.out.println("Your target weight has been set to " + targetWeight + " kg");
         saveUsersToCSV();
+    }
+
+    public void CalculateDailyMeals() {
+        String[] times = { "Breakfast", "Lunch", "Dinner" };
+        double totalCalories = 0;
+        StringBuilder summary = new StringBuilder();
+        summary.append("=== Today's Meals ===\n");
+
+        s.nextLine();
+
+        for (String meal : times) {
+            System.out.print("Enter your " + meal + ": ");
+            String food = s.nextLine();
+
+            double calories = getCaloriesAPI(food);
+            summary.append(meal).append(": ").append(food).append(" (").append(calories).append(" kcal)\n");
+            System.out.println("Calories for " + food + ": " + calories + " kcal");
+            totalCalories += calories;
+        }
+
+        summary.append("Total calories today: ").append(totalCalories).append(" kcal\n");
+        System.out.println(summary.toString());
+
+        try (BufferedWriter bw = new BufferedWriter(
+                new FileWriter("./Data/" + currentUser.getUsername() + "_meals.txt", true))) {
+            bw.write(new Date() + "\n" + summary.toString() + "\n");
+        } catch (IOException e) {
+            System.out.println("Failed to save meal history: " + e.getMessage());
+        }
+    }
+
+    private double getCaloriesAPI(String query) {
+        try {
+            String apiUrl = "https://trackapi.nutritionix.com/v2/natural/nutrients";
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("x-app-id", "9349888e");
+            conn.setRequestProperty("x-app-key", "7539abea0fa15a7ceac250bc33dc92dc");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            String jsonInputString = "{\"query\": \"" + query + "\"}";
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                String resp = response.toString();
+                double total = 0;
+                int idx = 0;
+                while ((idx = resp.indexOf("\"nf_calories\"", idx)) != -1) {
+                    int startCal = resp.indexOf(":", idx) + 1;
+                    int endCal = resp.indexOf(",", startCal);
+                    if (endCal == -1)
+                        endCal = resp.indexOf("}", startCal);
+                    String calStr = resp.substring(startCal, endCal).trim();
+                    total += Double.parseDouble(calStr);
+                    idx = endCal;
+                }
+                if (total > 0) {
+                    return total;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error calling Nutritionix API: " + e.getMessage());
+        }
+
+        System.out.print("Calories for \"" + query + "\" not found. Please enter the calories manually (kcal): ");
+        double manualCal = s.nextDouble();
+        s.nextLine();
+        return manualCal;
     }
 
     public void UpdateUserProfile() {
@@ -562,166 +728,9 @@ public class Logic {
             saveUsersToCSV();
 
         } while (Running);
-
     }
 
-    private void saveUsersToCSV() {
-        String filePath = "./Data/Users.csv";
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, false))) {
-            for (User user : UserList) {
-                String userData = String.join(",",
-                        user.getUsername(),
-                        user.getPassword(),
-                        String.valueOf(user.getUsia()),
-                        String.valueOf(user.getBeratBadan()),
-                        String.valueOf(user.getTinggiBadan()),
-                        user.getLevel(),
-                        String.valueOf(user.getTargetWeight()));
-                bw.write(userData);
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Failed to update users: " + e.getMessage());
-        }
-    }
-
-    public void ViewCaloriesBurnt() {
-        System.out.println();
-        System.out.println("=== Total Calories Burned ===");
-        String filePath = "./Data/" + currentUser.getUsername() + "_history.txt";
-        File historyFile = new File(filePath);
-        if (!historyFile.exists()) {
-            System.out.println("No workout history found.");
-            return;
-        }
-
-        int totalCalories = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-                // Match lines like: 1. Exercise Name (20 reps)
-                if (line.matches("\\d+\\. .+\\(\\d+ reps\\)")) {
-                    // Extract exercise name and reps
-                    int idxStart = line.indexOf(". ") + 2;
-                    int idxParen = line.lastIndexOf(" (");
-                    String namaLatihan = line.substring(idxStart, idxParen).trim();
-                    int reps = Integer.parseInt(line.substring(line.lastIndexOf("(") + 1, line.lastIndexOf(" reps")));
-                    Latihan latihan = findLatihanByName(namaLatihan);
-                    if (latihan instanceof RepetitionLatihan) {
-                        int kaloriPerLatihan = latihan.getKaloriPerLatihan();
-                        totalCalories += reps * kaloriPerLatihan;
-                    }
-                } else if (line.matches("\\d+\\. .+\\(\\d+ seconds\\)")) {
-                    // Extract exercise name and seconds
-                    int idxStart = line.indexOf(". ") + 2;
-                    int idxParen = line.lastIndexOf(" (");
-                    String namaLatihan = line.substring(idxStart, idxParen).trim();
-                    int seconds = Integer
-                            .parseInt(line.substring(line.lastIndexOf("(") + 1, line.lastIndexOf(" seconds")));
-                    Latihan latihan = findLatihanByName(namaLatihan);
-                    if (latihan instanceof DurationLatihan) {
-                        int kaloriPerLatihan = latihan.getKaloriPerLatihan();
-                        totalCalories += seconds * kaloriPerLatihan;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Failed to read workout history: " + e.getMessage());
-            return;
-        }
-
-        System.out.println("You have burned a total of " + totalCalories + " calories!");
-    }
-
-    private Latihan findLatihanByName(String namaLatihan) {
-        for (DifficultyLatihan diff : allDifficulty) {
-            for (Latihan l : diff.getLatihanList()) {
-                if (l.getNamaLatihan().equalsIgnoreCase(namaLatihan)) {
-                    return l;
-                }
-            }
-        }
-        return null;
-    }
-
-    public void calculateDailyMeals() {
-        String[] times = {"Breakfast", "Lunch", "Dinner"};
-        double totalCalories = 0;
-        StringBuilder summary = new StringBuilder();
-        summary.append("=== Today's Meals ===\n");
-
-        s.nextLine();
-
-        for (String meal : times) {
-            System.out.print("Enter your " + meal + ": ");
-            String food = s.nextLine();
-
-            double calories = getCaloriesAPI(food);
-            summary.append(meal).append(": ").append(food).append(" (").append(calories).append(" kcal)\n");
-            System.out.println("Calories for " + food + ": " + calories + " kcal");
-            totalCalories += calories;
-        }
-
-        summary.append("Total calories today: ").append(totalCalories).append(" kcal\n");
-        System.out.println(summary.toString());
-
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./Data/" + currentUser.getUsername() + "_meals.txt", true))) {
-            bw.write(new Date() + "\n" + summary.toString() + "\n");
-        } catch (IOException e) {
-            System.out.println("Failed to save meal history: " + e.getMessage());
-        }
-    }
-
-    private double getCaloriesAPI(String query) {
-        try {
-            String apiUrl = "https://trackapi.nutritionix.com/v2/natural/nutrients";
-            URL url = new URL(apiUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("x-app-id", "9349888e");
-            conn.setRequestProperty("x-app-key", "7539abea0fa15a7ceac250bc33dc92dc");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            String jsonInputString = "{\"query\": \"" + query + "\"}";
-            try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String inputLine;
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                String resp = response.toString();
-                double total = 0;
-                int idx = 0;
-                while ((idx = resp.indexOf("\"nf_calories\"", idx)) != -1) {
-                    int startCal = resp.indexOf(":", idx) + 1;
-                    int endCal = resp.indexOf(",", startCal);
-                    if (endCal == -1) endCal = resp.indexOf("}", startCal);
-                    String calStr = resp.substring(startCal, endCal).trim();
-                    total += Double.parseDouble(calStr);
-                    idx = endCal;
-                }
-                if (total > 0) {
-                    return total;
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error calling Nutritionix API: " + e.getMessage());
-        }
-
-        System.out.print("Calories for \"" + query + "\" not found. Please enter the calories manually (kcal): ");
-        double manualCal = s.nextDouble();
-        s.nextLine();
-        return manualCal;
+    public void showWeightProgress() {
+        
     }
 }
