@@ -4,11 +4,13 @@ import java.util.*;
 import Object.*;
 import java.io.*;
 import java.nio.file.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class Logic {
     Scanner s = new Scanner(System.in);
     ArrayList<User> UserList = new ArrayList<>();
-    public static ArrayList<DifficultyLatihan> allDifficulty = new ArrayList<>();
+    ArrayList<DifficultyLatihan> allDifficulty = new ArrayList<>();
     User currentUser = null;
     ArrayList<Latihan> warmUp = new ArrayList<>();
     ArrayList<Latihan> mainWorkout = new ArrayList<>();
@@ -92,7 +94,7 @@ public class Logic {
             System.out.println("Failed to load users: " + e.getMessage());
         }
         InitializeLatihan i = new InitializeLatihan();
-        i.inisialisasiLatihan();
+        allDifficulty = i.inisialisasiLatihan();
     }
 
     public void Login() {
@@ -221,7 +223,6 @@ public class Logic {
         int choice = -1;
         do {
             System.out.println();
-            System.out.println();
             System.out.println("=============================");
             System.out.println("           FitLife           ");
             System.out.println("=============================");
@@ -231,7 +232,8 @@ public class Logic {
             System.out.println("4. View Workout History");
             System.out.println("5. Set Your Weight Target");
             System.out.println("6. Update User Profile");
-            System.out.println("7. Logout");
+            System.out.println("7. Set your Daily Meals");
+            System.out.println("8. Logout");
             System.out.print(">  ");
             choice = s.nextInt();
 
@@ -255,6 +257,9 @@ public class Logic {
                     UpdateUserProfile();
                     break;
                 case 7:
+                    calculateDailyMeals();
+                    break;
+                case 8:
                     System.out.println("Logging out...");
                     System.out.println();
                     running = false;
@@ -339,8 +344,20 @@ public class Logic {
             }
         }
 
-        String workoutSummary = generateWorkoutSummary(warmUp, mainWorkout, cooldown, WarmUpCount, MainWorkoutCount, CooldownCount);
-        saveWorkoutHistory(currentUser.getUsername(), workoutSummary);
+        System.out.println("Are you done with your workout? (yes/no)");
+        String response = s.next();
+        while (!response.equalsIgnoreCase("yes") && !response.equalsIgnoreCase("no")) {
+            System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+            response = s.next();
+        }
+        if (response.equalsIgnoreCase("yes")) {
+            String workoutSummary = generateWorkoutSummary(warmUp, mainWorkout, cooldown, WarmUpCount, MainWorkoutCount,
+                    CooldownCount);
+            saveWorkoutHistory(currentUser.getUsername(), workoutSummary);
+        } else {
+            System.out.println("Workout not completed. No history saved.");
+            return;
+        }
     }
 
     public void GenerateLatihanThisWeek() {
@@ -445,7 +462,7 @@ public class Logic {
         System.out.print("Enter your target weight (kg): ");
         int targetWeight = s.nextInt();
         currentUser.setTargetWeight(targetWeight);
-        System.out.println("Your target weight has been set to " + targetWeight + " kg.");
+        System.out.println("Your target weight has been set to " + targetWeight + " kg");
         saveUsersToCSV();
     }
 
@@ -600,7 +617,8 @@ public class Logic {
                     int idxStart = line.indexOf(". ") + 2;
                     int idxParen = line.lastIndexOf(" (");
                     String namaLatihan = line.substring(idxStart, idxParen).trim();
-                    int seconds = Integer.parseInt(line.substring(line.lastIndexOf("(") + 1, line.lastIndexOf(" seconds")));
+                    int seconds = Integer
+                            .parseInt(line.substring(line.lastIndexOf("(") + 1, line.lastIndexOf(" seconds")));
                     Latihan latihan = findLatihanByName(namaLatihan);
                     if (latihan instanceof DurationLatihan) {
                         int kaloriPerLatihan = latihan.getKaloriPerLatihan();
@@ -616,7 +634,6 @@ public class Logic {
         System.out.println("You have burned a total of " + totalCalories + " calories!");
     }
 
-    // Helper function to find Latihan by name from allDifficulty
     private Latihan findLatihanByName(String namaLatihan) {
         for (DifficultyLatihan diff : allDifficulty) {
             for (Latihan l : diff.getLatihanList()) {
@@ -626,5 +643,85 @@ public class Logic {
             }
         }
         return null;
+    }
+
+    public void calculateDailyMeals() {
+        String[] times = {"Breakfast", "Lunch", "Dinner"};
+        double totalCalories = 0;
+        StringBuilder summary = new StringBuilder();
+        summary.append("=== Today's Meals ===\n");
+
+        s.nextLine();
+
+        for (String meal : times) {
+            System.out.print("Enter your " + meal + ": ");
+            String food = s.nextLine();
+
+            double calories = getCaloriesAPI(food);
+            summary.append(meal).append(": ").append(food).append(" (").append(calories).append(" kcal)\n");
+            System.out.println("Calories for " + food + ": " + calories + " kcal");
+            totalCalories += calories;
+        }
+
+        summary.append("Total calories today: ").append(totalCalories).append(" kcal\n");
+        System.out.println(summary.toString());
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./Data/" + currentUser.getUsername() + "_meals.txt", true))) {
+            bw.write(new Date() + "\n" + summary.toString() + "\n");
+        } catch (IOException e) {
+            System.out.println("Failed to save meal history: " + e.getMessage());
+        }
+    }
+
+    private double getCaloriesAPI(String query) {
+        try {
+            String apiUrl = "https://trackapi.nutritionix.com/v2/natural/nutrients";
+            URL url = new URL(apiUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("x-app-id", "9349888e");
+            conn.setRequestProperty("x-app-key", "7539abea0fa15a7ceac250bc33dc92dc");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            String jsonInputString = "{\"query\": \"" + query + "\"}";
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                String resp = response.toString();
+                double total = 0;
+                int idx = 0;
+                while ((idx = resp.indexOf("\"nf_calories\"", idx)) != -1) {
+                    int startCal = resp.indexOf(":", idx) + 1;
+                    int endCal = resp.indexOf(",", startCal);
+                    if (endCal == -1) endCal = resp.indexOf("}", startCal);
+                    String calStr = resp.substring(startCal, endCal).trim();
+                    total += Double.parseDouble(calStr);
+                    idx = endCal;
+                }
+                if (total > 0) {
+                    return total;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error calling Nutritionix API: " + e.getMessage());
+        }
+
+        System.out.print("Calories for \"" + query + "\" not found. Please enter the calories manually (kcal): ");
+        double manualCal = s.nextDouble();
+        s.nextLine();
+        return manualCal;
     }
 }

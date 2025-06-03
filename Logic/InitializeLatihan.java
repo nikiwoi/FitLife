@@ -1,11 +1,14 @@
 package Logic;
 
+import java.util.ArrayList;
+
 import Object.DifficultyLatihan;
 import Object.DurationLatihan;
 import Object.RepetitionLatihan;
 
 public class InitializeLatihan {
-    public void inisialisasiLatihan() {
+    public ArrayList<DifficultyLatihan> inisialisasiLatihan() {
+        ArrayList<DifficultyLatihan> allDifficulty = new ArrayList<>();
         DifficultyLatihan beginner = new DifficultyLatihan("Beginner");
         DifficultyLatihan intermediate = new DifficultyLatihan("Intermediate");
         DifficultyLatihan advanced = new DifficultyLatihan("Advanced");
@@ -47,7 +50,7 @@ public class InitializeLatihan {
                 "Stretching, Cooldown", "Cooldown", 1, 30));
         beginner.addLatihan(new DurationLatihan("Standing Stretch", "Stand and reach for your toes, hold",
                 "Hamstring Stretch, Cooldown", "Cooldown", 1, 30));
-        Logic.allDifficulty.add(beginner);
+        allDifficulty.add(beginner);
 
         // Intermediate
         // --- WARM UP ---
@@ -91,7 +94,7 @@ public class InitializeLatihan {
                 "Hamstring Stretch, Cooldown", "Cooldown", 1, 30));
         intermediate.addLatihan(new DurationLatihan("Spinal Twist", "Lie on back, twist knees to side", "Spine Stretch",
                 "Cooldown", 1, 30));
-        Logic.allDifficulty.add(intermediate);
+        allDifficulty.add(intermediate);
 
         // Advanced
         // --- WARM UP ---
@@ -147,6 +150,8 @@ public class InitializeLatihan {
                 "Hip/Back Stretch", "Cooldown", 1, 30));
         advanced.addLatihan(new DurationLatihan("Supine Twist", "Lie on back, twist knees to side", "Spine Stretch",
                 "Cooldown", 1, 30));
-        Logic.allDifficulty.add(advanced);
+        allDifficulty.add(advanced);
+
+        return allDifficulty;
     }
 }
