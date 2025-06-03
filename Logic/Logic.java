@@ -339,7 +339,7 @@ public class Logic {
             }
         }
 
-        String workoutSummary = generateWorkoutSummary(warmUp, mainWorkout, cooldown, MainWorkoutCount);
+        String workoutSummary = generateWorkoutSummary(warmUp, mainWorkout, cooldown, WarmUpCount, MainWorkoutCount, CooldownCount);
         saveWorkoutHistory(currentUser.getUsername(), workoutSummary);
     }
 
@@ -363,11 +363,11 @@ public class Logic {
     }
 
     private String generateWorkoutSummary(List<Latihan> warmUp, List<Latihan> mainWorkout, List<Latihan> cooldown,
-            int mainWorkoutCount) {
+            int WarmUpCount, int MainWorkoutCount, int CooldownCount) {
         StringBuilder sb = new StringBuilder();
         sb.append("Workout Date: ").append(new Date()).append("\n");
         sb.append("Warm-Up:\n");
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < WarmUpCount; i++) {
             Latihan l = warmUp.get(i);
             if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
                 sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
@@ -378,7 +378,7 @@ public class Logic {
             }
         }
         sb.append("Main Workout:\n");
-        for (int i = 0; i < mainWorkoutCount; i++) {
+        for (int i = 0; i < MainWorkoutCount; i++) {
             Latihan l = mainWorkout.get(i);
             if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
                 sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
@@ -389,7 +389,7 @@ public class Logic {
             }
         }
         sb.append("Cooldown:\n");
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < CooldownCount; i++) {
             Latihan l = cooldown.get(i);
             if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
                 sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
