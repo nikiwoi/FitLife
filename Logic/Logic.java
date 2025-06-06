@@ -233,7 +233,7 @@ public class Logic {
             System.out.println("2. Generate This Week's Workout");
             System.out.println("---------------------------------");
             System.out.println("3. View Calories Burnt Today");
-            System.out.println("4. View your Weight Progress");
+            System.out.println("4. View Your Calories Progress");
             System.out.println("5. View Workout History");
             System.out.println("---------------------------------");
             System.out.println("6. Set your Daily Meals");
@@ -255,7 +255,7 @@ public class Logic {
                     ViewCaloriesBurnt();
                     break;
                 case 4:
-                    ViewWeightProgress();
+                    ViewCaloriesProgress();
                     break;
                 case 5:
                     ViewWorkoutHistory();
@@ -564,7 +564,7 @@ public class Logic {
         }
     }
 
-    public void ViewWeightProgress() {
+    public void ViewCaloriesProgress() {
 
     }
 
@@ -642,8 +642,6 @@ public class Logic {
             System.out.println("Failed to save workout history: " + e.getMessage());
         }
     }
-
-    
 
     public void CalculateDailyMeals() {
         String[] times = { "Breakfast", "Lunch", "Dinner" };
