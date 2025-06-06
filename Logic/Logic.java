@@ -228,7 +228,7 @@ public class Logic {
             System.out.println("=============================");
             System.out.println("1. Generate Today's Workout");
             System.out.println("2. Generate This Week's Workout");
-            System.out.println("3. View Calories Burnt");
+            System.out.println("3. View Calories Burnt Today");
             System.out.println("4. View Workout History");
             System.out.println("5. Set Your Weight Target");
             System.out.println("6. Set your Daily Meals");
@@ -404,17 +404,76 @@ public class Logic {
     }
 
     public void ViewCaloriesBurnt() {
-        System.out.println();
-        System.out.println("=== Total Calories Burned ===");
+        String today = new java.text.SimpleDateFormat("yyyyMMdd").format(new Date());
+        String workoutFile = "./Data/" + currentUser.getUsername() + "_history.txt";
+        String mealsFile = "./Data/" + currentUser.getUsername() + "_meals.txt";
+
+        boolean workoutToday = false;
+        boolean mealsToday = false;
+
+        // Cek workout hari ini
+        File historyFile = new File(workoutFile);
+        if (historyFile.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.startsWith("Workout Date:")) {
+                        String dateStr = line.substring("Workout Date:".length()).trim();
+                        String entryDate = new java.text.SimpleDateFormat("yyyyMMdd").format(new Date(dateStr));
+                        if (entryDate.equals(today)) {
+                            workoutToday = true;
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to read workout history: " + e.getMessage());
+            }
+        }
+
+        // Cek meals hari ini
+        File mealFile = new File(mealsFile);
+        if (mealFile.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(mealFile))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    try {
+                        java.util.Date date = new java.util.Date(line.trim());
+                        String entryDate = new java.text.SimpleDateFormat("yyyyMMdd").format(date);
+                        if (entryDate.equals(today)) {
+                            mealsToday = true;
+                            break;
+                        }
+                    } catch (Exception e) {
+                        // skip non-date lines
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to read meal history: " + e.getMessage());
+            }
+        }
+
+        if (!workoutToday && !mealsToday) {
+            System.out.println("You must complete today's workout and set your daily meals before viewing calories burnt.");
+            return;
+        } else if (!workoutToday) {
+            System.out.println("You must complete today's workout before viewing calories burnt.");
+            return;
+        } else if (!mealsToday) {
+            System.out.println("You must set your daily meals before viewing calories burnt.");
+            return;
+        }
+
+        // Jika sudah workout dan meals hari ini, lanjutkan fungsi aslinya
         String filePath = "./Data/" + currentUser.getUsername() + "_history.txt";
-        File historyFile = new File(filePath);
-        if (!historyFile.exists()) {
+        File historyFile2 = new File(filePath);
+        if (!historyFile2.exists()) {
             System.out.println("No workout history found.");
             return;
         }
 
         int totalCalories = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(historyFile2))) {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
@@ -559,8 +618,12 @@ public class Logic {
         s.nextLine();
 
         for (String meal : times) {
-            System.out.print("Enter your " + meal + ": ");
+            System.out.print("Enter your " + meal + " (- to skip): ");
             String food = s.nextLine();
+
+            if (food.equals("-")) {
+                continue;
+            }
 
             double calories = getCaloriesAPI(food);
             summary.append(meal).append(": ").append(food).append(" (").append(calories).append(" kcal)\n");
