@@ -467,7 +467,7 @@ public class Logic {
         boolean workoutMenu = true;
         while (workoutMenu) {
             System.out.println();
-            System.out.println("=== Workout Menu ===");
+            System.out.println("==============================");
             System.out.println("1. View Workout Steps");
             System.out.println("2. View Workout Benefits");
             System.out.println("3. Done with Workout");
