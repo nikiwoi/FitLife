@@ -149,13 +149,13 @@ public class Logic {
         }
         System.out.print("Create Password: ");
         String password = s.next() + s.nextLine();
-        System.out.print("Enter Age: ");
+        System.out.print("Enter your Age: ");
         int usia = s.nextInt();
         s.nextLine();
-        System.out.print("Enter weight (kg): ");
+        System.out.print("Enter your weight (kg): ");
         double beratBadan = s.nextDouble();
         s.nextLine();
-        System.out.print("Enter height (cm): ");
+        System.out.print("Enter your height (cm): ");
         double tinggiBadan = s.nextDouble();
         s.nextLine();
         System.out.print("Enter your target weight (kg): ");
@@ -164,7 +164,7 @@ public class Logic {
         String recommendedLevel = rekomendasiLevel(usia, beratBadan, tinggiBadan);
         System.out.println("Your BMI is : " + (int) (beratBadan / ((tinggiBadan / 100) * (tinggiBadan / 100))));
         System.out.println("According to your BMI we recommend : " + "\u001B[32m" + recommendedLevel + "\u001B[0m");
-        System.out.print("Enter exercise difficulty level : ");
+        System.out.print("Enter your difficulty level : ");
         System.out.println();
 
         String[] levels = { "Beginner", "Intermediate", "Advanced" };
@@ -402,11 +402,11 @@ public class Logic {
             }
         }
 
-        System.out.println("Are you done with your workout (Y/N)?");
-        String response = s.next();
+        System.out.print("Are you done with your workout (Y/N)? ");
+        String response = s.next() + s.nextLine();
         while (!response.equalsIgnoreCase("Y") && !response.equalsIgnoreCase("N")) {
             System.out.println("Invalid input. Please enter 'Y' or 'N'.");
-            response = s.next();
+            response = s.next() + s.nextLine();
         }
         if (response.equalsIgnoreCase("Y")) {
             int totalKalori = 0;
@@ -472,10 +472,10 @@ public class Logic {
         String workoutFile = "./Data/" + currentUser.getUsername() + "_history.txt";
         String mealsFile = "./Data/" + currentUser.getUsername() + "_meals.txt";
 
-        boolean workoutToday = false;
-        boolean mealsToday = false;
         int totalCaloriesBurned = 0;
+        boolean workoutToday = false;
         double totalCaloriesIntake = 0;
+        boolean mealsToday = false;
 
         // Cek workout hari ini & ambil total kalori terbakar
         File historyFile = new File(workoutFile);
@@ -537,35 +537,155 @@ public class Logic {
         }
 
         // Validasi
-        if (!workoutToday && !mealsToday) {
+        if (!mealsToday && !workoutToday) {
             System.out.println(
                     "You must complete today's workout and set your daily meals before viewing calories burnt.");
             return;
-        } else if (!workoutToday) {
-            System.out.println("You must complete today's workout before viewing calories burnt.");
-            return;
         } else if (!mealsToday) {
             System.out.println("You must set your daily meals before viewing calories burnt.");
+            return;
+        } else if (!workoutToday) {
+            System.out.println("You must complete today's workout before viewing calories burnt.");
             return;
         }
 
         // Tampilkan hasil
         System.out.println("=== Calories Summary for Today ===");
-        System.out.println("Total calories intake (meals): " + totalCaloriesIntake + " kcal");
         System.out.println("Total calories burned (workout): " + totalCaloriesBurned + " kcal");
-        double netCalories = totalCaloriesIntake - totalCaloriesBurned;
-        System.out.println("Net calories today (intake - burned): " + netCalories + " kcal");
-        if (netCalories < 0) {
+        System.out.println("Total calories intake (meals): " + totalCaloriesIntake + " kcal");
+        double netCalories = totalCaloriesBurned - totalCaloriesIntake;
+        System.out.println("Total calories burned (net): " + netCalories + " kcal");
+        if (netCalories > 0) {
             System.out.println("You are in a calorie deficit today");
-        } else if (netCalories > 0) {
+        } else if (netCalories < 0) {
             System.out.println("You are in a calorie surplus today");
         } else {
             System.out.println("Your calories are balanced today");
         }
+
+        System.out.println("====================================");
+        System.out.println("1. View Calories Progress");
+        System.out.println("0. Back to Main Menu");
+        System.out.print("> ");
+        int choice = s.nextInt();
+
+        if (choice == 1) {
+            if (currentUser.getTargetWeight() == 0) {
+                System.out.println("You have not set a target weight yet. Please set your target weight first.");
+                SetWeightTarget();
+            }
+            ViewCaloriesProgress();
+        } else if (choice == 0) {
+            return;
+        } else {
+            System.out.println("Invalid choice. Returning to main menu.");
+        }
     }
 
     public void ViewCaloriesProgress() {
+        System.out.println();
+        System.out.println("=== Calories Progress ===");
+        double currentWeight = currentUser.getBeratBadan();
+        int targetWeight = currentUser.getTargetWeight();
 
+        if (targetWeight == 0 || targetWeight >= currentWeight) {
+            System.out.println("Please set a valid target weight first.");
+            return;
+        }
+
+        // Read workout history
+        ArrayList<String> workoutDates = new ArrayList<>();
+        ArrayList<Integer> workoutCalories = new ArrayList<>();
+        String workoutFile = "./Data/" + currentUser.getUsername() + "_history.txt";
+        File historyFile = new File(workoutFile);
+        if (historyFile.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(workoutFile))) {
+                String line;
+                String date = null;
+                while ((line = br.readLine()) != null) {
+                    if (line.startsWith("Workout Date:")) {
+                        date = line.substring("Workout Date:".length()).trim();
+                    }
+                    if (date != null && line.startsWith("Total calories burned:")) {
+                        String[] parts = line.split(":");
+                        if (parts.length > 1) {
+                            String calStr = parts[1].replace("kcal", "").trim();
+                            try {
+                                workoutDates.add(date);
+                                workoutCalories.add(Integer.parseInt(calStr));
+                            } catch (NumberFormatException e) {
+                                // skip
+                            }
+                        }
+                        date = null;
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("Failed to read workout history: " + e.getMessage());
+            }
+        }
+
+        // Read meal history
+        ArrayList<String> mealDates = new ArrayList<>();
+        ArrayList<Double> mealCalories = new ArrayList<>();
+        String mealsFile = "./Data/" + currentUser.getUsername() + "_meals.txt";
+        File mealFile = new File(mealsFile);
+        if (mealFile.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(mealsFile))) {
+                String line;
+                String date = null;
+                while ((line = br.readLine()) != null) {
+                    if (line.trim().matches("\\d{4}-\\d{2}-\\d{2}")) {
+                        date = line.trim();
+                    }
+                    if (date != null && line.startsWith("Total calories intake:")) {
+                        String[] parts = line.split(":");
+                        if (parts.length > 1) {
+                            String calStr = parts[1].replace("kcal", "").trim();
+                            try {
+                                mealDates.add(date);
+                                mealCalories.add(Double.parseDouble(calStr));
+                            } catch (NumberFormatException e) {
+                                // skip
+                            }
+                        }
+                        date = null;
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("Failed to read meal history: " + e.getMessage());
+            }
+        }
+
+        // Calculate total net calories for days that exist in both lists
+        double totalNetCalories = 0;
+        for (int i = 0; i < mealDates.size(); i++) {
+            String date = mealDates.get(i);
+            for (int j = 0; j < workoutDates.size(); j++) {
+                if (date.equals(workoutDates.get(j))) {
+                    totalNetCalories += workoutCalories.get(j) - mealCalories.get(i);
+                    break;
+                }
+            }
+        }
+
+        // Calculate target calories
+        double weightToLose = currentWeight - targetWeight;
+        double targetCalories = weightToLose * 7700;
+
+        System.out.println("Current Weight: " + currentWeight + " kg");
+        System.out.println("Target Weight: " + targetWeight + " kg");
+        System.out.println("-------------------------------");
+        System.out.println("Total Calories you have Burned: " + totalNetCalories + " kcal");
+        System.out.println("Target Calories to Burn: " + targetCalories + " kcal");
+        System.out.println("-------------------------------");
+        System.out.println(totalNetCalories + " kcal ---> " + targetCalories + " kcal");
+        if (totalNetCalories >= targetCalories) {
+            System.out.println("Congratulations! You have reached your target weight!");
+        } else {
+            double remainingCalories = targetCalories - totalNetCalories;
+            System.out.println("You need to burn " + remainingCalories + " more calories");
+        }
     }
 
     public void ViewWorkoutHistory() {
@@ -717,7 +837,7 @@ public class Logic {
 
         for (String meal : times) {
             System.out.print("Enter your " + meal + " (- to skip): ");
-            String food = s.nextLine();
+            String food = s.next() + s.nextLine();
 
             if (food.equals("-")) {
                 continue;
@@ -794,12 +914,26 @@ public class Logic {
     }
 
     public void SetWeightTarget() {
+        int targetWeight = 0;
+        boolean Running = true;
         System.out.println();
         System.out.println("=== Set Your Weight Target ===");
         System.out.println("Your current weight: " + currentUser.getBeratBadan() + " kg");
         System.out.println("==============================");
-        System.out.print("Enter your target weight (kg): ");
-        int targetWeight = s.nextInt();
+        do {
+            System.out.print("Enter your target weight (kg): ");
+            targetWeight = s.nextInt();
+            s.nextLine();
+            if (targetWeight <= 0) {
+                System.out.println("Invalid target weight. Please enter a positive number.");
+                Running = true;
+            } else if (targetWeight >= currentUser.getBeratBadan()) {
+                System.out.println("Target weight must be less than your current weight.");
+                Running = true;
+            } else {
+                Running = false;
+            }
+        } while (Running);
         currentUser.setTargetWeight(targetWeight);
         System.out.println("Your target weight has been set to " + targetWeight + " kg");
         saveUsersToCSV();
@@ -824,35 +958,68 @@ public class Logic {
 
             switch (choice) {
                 case 1:
-                    System.out.print("Enter new username: ");
+                    System.out.print("Enter your new username: ");
                     String newUsername = s.next() + s.nextLine();
                     currentUser.setUsername(newUsername);
                     System.out.println("Username updated successfully.");
                     break;
                 case 2:
-                    System.out.print("Enter new password: ");
+                    System.out.print("Enter your new password: ");
                     String newPassword = s.next() + s.nextLine();
                     currentUser.setPassword(newPassword);
                     System.out.println("Password updated successfully.");
                     break;
                 case 3:
-                    System.out.print("Enter new age: ");
+                    System.out.print("Enter your new age: ");
                     int newUsia = s.nextInt();
                     currentUser.setUsia(newUsia);
                     System.out.println("Age updated successfully.");
                     break;
                 case 4:
-                    System.out.print("Enter new weight (kg): ");
+                    System.out.print("Enter your new weight (kg): ");
                     double newBeratBadan = s.nextDouble();
                     currentUser.setBeratBadan(newBeratBadan);
                     System.out.println("Weight updated successfully.");
+                    SetWeightTarget();
                     break;
                 case 5:
-                    System.out.print("Enter new height (cm): ");
-                    double newTinggiBadan = s.nextDouble();
-                    currentUser.setTinggiBadan(newTinggiBadan);
-                    System.out.println("Height updated successfully.");
-                    break;
+                    String recommendedLevel = rekomendasiLevel(currentUser.getUsia(), currentUser.getBeratBadan(),
+                            currentUser.getTinggiBadan());
+                    System.out.println(
+                            "Your BMI is : " + (int) (currentUser.getBeratBadan()
+                                    / ((currentUser.getTinggiBadan() / 100) * (currentUser.getTinggiBadan() / 100))));
+                    System.out.println(
+                            "According to your BMI we recommend : " + "\u001B[32m" + recommendedLevel + "\u001B[0m");
+                    System.out.print("Enter your new difficulty level : ");
+                    System.out.println();
+
+                    String[] levels = { "Beginner", "Intermediate", "Advanced" };
+                    for (int i = 0; i < levels.length; i++) {
+                        if (levels[i].equalsIgnoreCase(recommendedLevel)) {
+                            System.out.println((i + 1) + ". \u001B[32m" + levels[i] + "\u001B[0m");
+                        } else {
+                            System.out.println((i + 1) + ". " + levels[i]);
+                        }
+                    }
+                    System.out.print("> ");
+                    int levelchoice = s.nextInt();
+
+                    switch (levelchoice) {
+                        case 1:
+                            System.out.println("You have chosen Beginner level.");
+                            currentUser.setLevel("Beginner");
+                            break;
+                        case 2:
+                            System.out.println("You have chosen Intermediate level.");
+                            currentUser.setLevel("Intermediate");
+                            break;
+                        case 3:
+                            System.out.println("You have chosen Advanced level.");
+                            currentUser.setLevel("Advanced");
+                            break;
+                        default:
+                            break;
+                    }
                 case 0:
                     Running = false;
                     break;
