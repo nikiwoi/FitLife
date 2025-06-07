@@ -1,4 +1,4 @@
-package Object;
+package Model;
 
 public class DurationLatihan extends Latihan implements KaloriTracker {
     private int duration;

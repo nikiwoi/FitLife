@@ -2,9 +2,9 @@ package Logic;
 
 import java.util.ArrayList;
 
-import Object.DifficultyLatihan;
-import Object.DurationLatihan;
-import Object.RepetitionLatihan;
+import Model.DifficultyLatihan;
+import Model.DurationLatihan;
+import Model.RepetitionLatihan;
 
 public class InitializeLatihan {
         public ArrayList<DifficultyLatihan> inisialisasiLatihan() {

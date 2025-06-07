@@ -1,4 +1,4 @@
-package Object;
+package Model;
 
 public abstract class Latihan {
     protected String namaLatihan;

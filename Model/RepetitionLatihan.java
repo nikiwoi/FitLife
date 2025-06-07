@@ -1,4 +1,4 @@
-package Object;
+package Model;
 
 public class RepetitionLatihan extends Latihan implements KaloriTracker {
     private int repetition;

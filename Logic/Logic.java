@@ -1,7 +1,7 @@
 package Logic;
 
 import java.util.*;
-import Object.*;
+import Model.*;
 import java.io.*;
 import java.nio.file.*;
 import java.net.HttpURLConnection;
