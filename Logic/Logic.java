@@ -286,15 +286,14 @@ public class Logic {
             System.out.println("|             FitLife             |");
             System.out.println("|=================================|");
             System.out.println("|1. Generate Today's Workout      |");
-            System.out.println("|2. Generate This Week's Workout  |");
             System.out.println("|---------------------------------|");
-            System.out.println("|3. View Calories Burnt Today     |");
-            System.out.println("|4. View Workout History          |");
+            System.out.println("|2. View Calories Burnt Today     |");
+            System.out.println("|3. View Workout History          |");
             System.out.println("|---------------------------------|");
-            System.out.println("|5. Set your Daily Meals          |");
-            System.out.println("|6. Set Your Weight Target        |");
+            System.out.println("|4. Set your Daily Meals          |");
+            System.out.println("|5. Set Your Weight Target        |");
             System.out.println("|---------------------------------|");
-            System.out.println("|7. Update User Profile           |");
+            System.out.println("|6. Update User Profile           |");
             System.out.println("|0. Logout                        |");
             System.out.println(" ================================= ");
             boolean valid = false;
@@ -303,13 +302,13 @@ public class Logic {
                 try {
                     choice = s.nextInt();
                     s.nextLine();
-                    if (choice >= 0 && choice <= 7) {
+                    if (choice >= 0 && choice <= 6) {
                         valid = true;
                     } else {
-                        System.out.println("Invalid choice. Please enter a number between 0 and 7.");
+                        System.out.println("Invalid choice. Please enter a number between 0 and 6.");
                     }
                 } catch (InputMismatchException e) {
-                    System.out.println("Invalid input. Please enter a number between 0 and 7.");
+                    System.out.println("Invalid input. Please enter a number between 0 and 6.");
                     s.nextLine();
                 }
             } while (!valid);
@@ -319,21 +318,18 @@ public class Logic {
                     GenerateLatihanToday();
                     break;
                 case 2:
-                    GenerateLatihanThisWeek();
-                    break;
-                case 3:
                     ViewCaloriesBurnt();
                     break;
-                case 4:
+                case 3:
                     ViewWorkoutHistory();
                     break;
-                case 5:
+                case 4:
                     CalculateDailyMeals();
                     break;
-                case 6:
+                case 5:
                     SetWeightTarget();
                     break;
-                case 7:
+                case 6:
                     UpdateUserProfile();
                     break;
                 case 0:
@@ -510,25 +506,6 @@ public class Logic {
         } else {
             System.out.println("Workout not completed. No history saved.");
             return;
-        }
-    }
-
-    public void GenerateLatihanThisWeek() {
-        generateLatihan();
-        System.out.println(" === This Week's Workout ===");
-        for (int i = 0; i < 7; i++) {
-            System.out.println("--- Day " + (i + 1) + " ---");
-            for (int j = 0; j < MainWorkoutCount; j++) {
-                if (mainWorkout.get(j).getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                    System.out.println((j + 1) + ". " + mainWorkout.get(j).getNamaLatihan() + " ("
-                            + ((RepetitionLatihan) mainWorkout.get(j)).getRepetition() + " reps)");
-                } else if (mainWorkout.get(j).getTipeLatihan().equalsIgnoreCase("Duration")) {
-                    System.out.println((j + 1) + ". " + mainWorkout.get(j).getNamaLatihan() + " ("
-                            + ((DurationLatihan) mainWorkout.get(j)).getDuration() + " seconds)");
-                }
-            }
-            Collections.shuffle(mainWorkout);
-            System.out.println();
         }
     }
 
