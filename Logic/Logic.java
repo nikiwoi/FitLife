@@ -20,6 +20,7 @@ public class Logic {
     int CooldownCount = 2;
 
     public void run() {
+        System.out.println();
         Initialize();
         MainMenu();
     }
