@@ -94,7 +94,7 @@ public class Logic {
             System.out.println("Failed to load users: " + e.getMessage());
         }
         InitializeLatihan i = new InitializeLatihan();
-        allDifficulty = i.inisialisasiLatihan();
+        allDifficulty = i.initializeLatihan();
     }
 
     public void Login() {

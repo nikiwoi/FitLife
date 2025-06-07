@@ -7,7 +7,7 @@ import Model.DurationLatihan;
 import Model.RepetitionLatihan;
 
 public class InitializeLatihan {
-        public ArrayList<DifficultyLatihan> inisialisasiLatihan() {
+        public ArrayList<DifficultyLatihan> initializeLatihan() {
                 ArrayList<DifficultyLatihan> allDifficulty = new ArrayList<>();
                 DifficultyLatihan beginner = new DifficultyLatihan("Beginner");
                 DifficultyLatihan intermediate = new DifficultyLatihan("Intermediate");
