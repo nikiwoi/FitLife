@@ -72,23 +72,23 @@ public class Logic {
 
     public void Initialize() {
         UserList.clear();
-        String filePath = "./Data/Users.csv";
+        String filePath = "./Data/Users.txt";
         try (BufferedReader br = Files.newBufferedReader(Paths.get(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty())
                     continue;
-                String[] parts = line.split(",");
-                if (parts.length == 7) {
-                    String username = parts[0];
-                    String password = parts[1];
-                    int usia = Integer.parseInt(parts[2]);
-                    double beratBadan = Double.parseDouble(parts[3]);
-                    double tinggiBadan = Double.parseDouble(parts[4]);
-                    String level = parts[5];
-                    int targetWeight = Integer.parseInt(parts[6]);
-                    UserList.add(new User(username, password, usia, beratBadan, tinggiBadan, level, targetWeight));
-                }
+                // Each user is stored in 7 lines, separated by a blank line
+                String username = line.trim();
+                String password = br.readLine().trim();
+                int usia = Integer.parseInt(br.readLine().trim());
+                double beratBadan = Double.parseDouble(br.readLine().trim());
+                double tinggiBadan = Double.parseDouble(br.readLine().trim());
+                String level = br.readLine().trim();
+                int targetWeight = Integer.parseInt(br.readLine().trim());
+                UserList.add(new User(username, password, usia, beratBadan, tinggiBadan, level, targetWeight));
+                // Skip possible blank line between users
+                br.readLine();
             }
         } catch (IOException e) {
             System.out.println("Failed to load users: " + e.getMessage());
@@ -200,7 +200,7 @@ public class Logic {
         UserList.add(newUser);
         currentUser = newUser;
 
-        saveUsersToCSV();
+        saveUsersToTXT();
         System.out.println("Registration successful!");
 
         menu();
@@ -226,21 +226,22 @@ public class Logic {
         int choice = -1;
         do {
             System.out.println();
-            System.out.println("=============================");
-            System.out.println("           FitLife           ");
-            System.out.println("=============================");
-            System.out.println("1. Generate Today's Workout");
-            System.out.println("2. Generate This Week's Workout");
-            System.out.println("---------------------------------");
-            System.out.println("3. View Calories Burnt Today");
-            System.out.println("4. View Your Calories Progress");
-            System.out.println("5. View Workout History");
-            System.out.println("---------------------------------");
-            System.out.println("6. Set your Daily Meals");
-            System.out.println("7. Set Your Weight Target");
-            System.out.println("---------------------------------");
-            System.out.println("8. Update User Profile");
-            System.out.println("9. Logout");
+            System.out.println(" ================================= ");
+            System.out.println("|             FitLife             |");
+            System.out.println("|=================================|");
+            System.out.println("|1. Generate Today's Workout      |");
+            System.out.println("|2. Generate This Week's Workout  |");
+            System.out.println("|---------------------------------|");
+            System.out.println("|3. View Calories Burnt Today     |");
+            System.out.println("|4. View Your Calories Progress   |");
+            System.out.println("|5. View Workout History          |");
+            System.out.println("|---------------------------------|");
+            System.out.println("|6. Set your Daily Meals          |");
+            System.out.println("|7. Set Your Weight Target        |");
+            System.out.println("|---------------------------------|");
+            System.out.println("|8. Update User Profile           |");
+            System.out.println("|9. Logout                        |");
+            System.out.println(" ================================= ");
             System.out.print(">  ");
             choice = s.nextInt();
 
@@ -280,20 +281,18 @@ public class Logic {
         } while (running);
     }
 
-    private void saveUsersToCSV() {
-        String filePath = "./Data/Users.csv";
+    private void saveUsersToTXT() {
+        String filePath = "./Data/Users.txt";
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, false))) {
             for (User user : UserList) {
-                String userData = String.join(",",
-                        user.getUsername(),
-                        user.getPassword(),
-                        String.valueOf(user.getUsia()),
-                        String.valueOf(user.getBeratBadan()),
-                        String.valueOf(user.getTinggiBadan()),
-                        user.getLevel(),
-                        String.valueOf(user.getTargetWeight()));
-                bw.write(userData);
-                bw.newLine();
+                bw.write(user.getUsername() + "\n");
+                bw.write(user.getPassword() + "\n");
+                bw.write(user.getUsia() + "\n");
+                bw.write(user.getBeratBadan() + "\n");
+                bw.write(user.getTinggiBadan() + "\n");
+                bw.write(user.getLevel() + "\n");
+                bw.write(user.getTargetWeight() + "\n");
+                bw.write("\n"); // blank line between users
             }
         } catch (IOException e) {
             System.out.println("Failed to update users: " + e.getMessage());
@@ -936,7 +935,7 @@ public class Logic {
         } while (Running);
         currentUser.setTargetWeight(targetWeight);
         System.out.println("Your target weight has been set to " + targetWeight + " kg");
-        saveUsersToCSV();
+        saveUsersToTXT();
     }
 
     public void UpdateUserProfile() {
@@ -1029,7 +1028,7 @@ public class Logic {
             }
         } while (Running);
 
-        saveUsersToCSV();
+        saveUsersToTXT();
         System.out.println("User profile updated successfully.");
         System.out.println("Returning to main menu...");
     }
