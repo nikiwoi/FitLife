@@ -26,7 +26,6 @@ public class Logic {
 
     public void MainMenu() {
         boolean running = true;
-        boolean valid = false;
         int choice = -1;
         do {
             System.out.println();
@@ -36,19 +35,21 @@ public class Logic {
             System.out.println();
             System.out.println("1. Login to your account");
             System.out.println("2. Register a new account");
-            System.out.println("3. Exit");
+            System.out.println("0. Exit");
+            boolean valid = false;
             do {
+                System.out.print(">  ");
                 try {
-                    System.out.print(">  ");
                     choice = s.nextInt();
-                    if (choice > 0) {
+                    s.nextLine();
+                    if (choice >= 0 && choice <= 2) {
                         valid = true;
+                    } else {
+                        System.out.println("Invalid choice. Please enter a number between 0 and 2.");
                     }
-                    valid = true;
                 } catch (InputMismatchException e) {
-                    System.out.println("Invalid input. Please enter a number between 1 and 3.");
-                    System.out.println();
-                    s.next();
+                    System.out.println("Invalid input. Please enter a number between 0 and 2.");
+                    s.nextLine();
                 }
             } while (!valid);
             switch (choice) {
@@ -58,13 +59,12 @@ public class Logic {
                 case 2:
                     Register();
                     break;
-                case 3:
+                case 0:
                     System.out.println("Thank you for using FitLife! Goodbye!");
                     running = false;
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
-                    System.out.println();
                     break;
             }
         } while (running);
@@ -149,18 +149,59 @@ public class Logic {
         }
         System.out.print("Create Password: ");
         String password = s.next() + s.nextLine();
-        System.out.print("Enter your Age: ");
-        int usia = s.nextInt();
-        s.nextLine();
-        System.out.print("Enter your weight (kg): ");
-        double beratBadan = s.nextDouble();
-        s.nextLine();
-        System.out.print("Enter your height (cm): ");
-        double tinggiBadan = s.nextDouble();
-        s.nextLine();
-        System.out.print("Enter your target weight (kg): ");
-        int targetWeight = s.nextInt();
-        s.nextLine();
+
+        int usia = 0;
+        while (true) {
+            System.out.print("Enter your Age: ");
+            try {
+                usia = s.nextInt();
+                s.nextLine();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                s.nextLine();
+            }
+        }
+
+        double beratBadan = 0;
+        while (true) {
+            System.out.print("Enter your weight (kg): ");
+            try {
+                beratBadan = s.nextDouble();
+                s.nextLine();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                s.nextLine();
+            }
+        }
+
+        double tinggiBadan = 0;
+        while (true) {
+            System.out.print("Enter your height (cm): ");
+            try {
+                tinggiBadan = s.nextDouble();
+                s.nextLine();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                s.nextLine();
+            }
+        }
+
+        int targetWeight = 0;
+        while (true) {
+            System.out.print("Enter your target weight (kg): ");
+            try {
+                targetWeight = s.nextInt();
+                s.nextLine();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                s.nextLine();
+            }
+        }
+
         String recommendedLevel = rekomendasiLevel(usia, beratBadan, tinggiBadan);
         System.out.println("Your BMI is : " + (int) (beratBadan / ((tinggiBadan / 100) * (tinggiBadan / 100))));
         System.out.println("According to your BMI we recommend : " + "\u001B[32m" + recommendedLevel + "\u001B[0m");
@@ -175,10 +216,25 @@ public class Logic {
                 System.out.println((i + 1) + ". " + levels[i]);
             }
         }
-        System.out.print("> ");
-        int levelchoice = s.nextInt();
-        String level = null;
 
+        int levelchoice = 0;
+        while (true) {
+            System.out.print("> ");
+            try {
+                levelchoice = s.nextInt();
+                s.nextLine();
+                if (levelchoice >= 1 && levelchoice <= 3) {
+                    break;
+                } else {
+                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                s.nextLine();
+            }
+        }
+
+        String level = null;
         switch (levelchoice) {
             case 1:
                 System.out.println("You have chosen Beginner level.");
@@ -240,10 +296,24 @@ public class Logic {
             System.out.println("|7. Set Your Weight Target        |");
             System.out.println("|---------------------------------|");
             System.out.println("|8. Update User Profile           |");
-            System.out.println("|9. Logout                        |");
+            System.out.println("|0. Logout                        |");
             System.out.println(" ================================= ");
-            System.out.print(">  ");
-            choice = s.nextInt();
+            boolean valid = false;
+            do {
+                System.out.print(">  ");
+                try {
+                    choice = s.nextInt();
+                    s.nextLine();
+                    if (choice >= 0 && choice <= 8) {
+                        valid = true;
+                    } else {
+                        System.out.println("Invalid choice. Please enter a number between 0 and 8.");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please enter a number between 0 and 8.");
+                    s.nextLine();
+                }
+            } while (!valid);
 
             switch (choice) {
                 case 1:
@@ -270,7 +340,7 @@ public class Logic {
                 case 8:
                     UpdateUserProfile();
                     break;
-                case 9:
+                case 0:
                     System.out.println("Logging out...");
                     System.out.println();
                     running = false;
@@ -719,10 +789,10 @@ public class Logic {
         for (int i = 0; i < WarmUpCount; i++) {
             Latihan l = warmUp.get(i);
             if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                sb.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((RepetitionLatihan) l).getRepetition()).append(" reps)\n");
             } else if (l.getTipeLatihan().equalsIgnoreCase("Duration")) {
-                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                sb.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((DurationLatihan) l).getDuration()).append(" seconds)\n");
             }
         }
@@ -730,10 +800,10 @@ public class Logic {
         for (int i = 0; i < MainWorkoutCount; i++) {
             Latihan l = mainWorkout.get(i);
             if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                sb.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((RepetitionLatihan) l).getRepetition()).append(" reps)\n");
             } else if (l.getTipeLatihan().equalsIgnoreCase("Duration")) {
-                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                sb.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((DurationLatihan) l).getDuration()).append(" seconds)\n");
             }
         }
@@ -741,14 +811,13 @@ public class Logic {
         for (int i = 0; i < CooldownCount; i++) {
             Latihan l = cooldown.get(i);
             if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                sb.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((RepetitionLatihan) l).getRepetition()).append(" reps)\n");
             } else if (l.getTipeLatihan().equalsIgnoreCase("Duration")) {
-                sb.append((i + 1)).append(". ").append(l.getNamaLatihan()).append(" (")
+                sb.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((DurationLatihan) l).getDuration()).append(" seconds)\n");
             }
         }
-        sb.append("====================================\n");
         return sb.toString();
     }
 
@@ -756,31 +825,34 @@ public class Logic {
         String filePath = "./Data/" + username + "_history.txt";
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
             bw.write(workoutSummary);
-            bw.newLine();
+            bw.write("\n");
         } catch (IOException e) {
             System.out.println("Failed to save workout history: " + e.getMessage());
         }
     }
 
     public void CalculateDailyMeals() {
-        String[] times = { "Breakfast", "Lunch", "Dinner" };
-        double totalCalories = 0;
-        StringBuilder summary = new StringBuilder();
-        summary.append("=== Today's Meals ===\n");
-
+        System.out.println();
+        System.out.println("=== Set Your Daily Meals ===");
         String todayDate = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String mealsFile = "./Data/" + currentUser.getUsername() + "_meals.txt";
-        boolean alreadySet = false;
 
-        // Check if today's meals already exist
-        File mealFile = new File(mealsFile);
-        if (mealFile.exists()) {
-            try (BufferedReader br = new BufferedReader(new FileReader(mealFile))) {
+        // Check if meals are already set for today
+        boolean alreadySet = false;
+        File file = new File(mealsFile);
+        if (file.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
+                boolean isToday = false;
                 while ((line = br.readLine()) != null) {
                     if (line.trim().equals(todayDate)) {
-                        alreadySet = true;
+                        isToday = true;
+                    } else if (isToday && line.trim().isEmpty()) {
+                        // End of today's meals
                         break;
+                    }
+                    if (isToday) {
+                        alreadySet = true;
                     }
                 }
             } catch (IOException e) {
@@ -800,15 +872,11 @@ public class Logic {
                     boolean skip = false;
                     while ((line = br.readLine()) != null) {
                         if (line.trim().equals(todayDate)) {
-                            skip = true; // start skipping today's entry
-                            continue;
-                        }
-                        if (skip && line.startsWith("===")) {
-                            // skip summary lines until next date or end
+                            skip = true;
                             continue;
                         }
                         if (skip && line.trim().isEmpty()) {
-                            skip = false; // end skipping after blank line
+                            skip = false;
                             continue;
                         }
                         if (!skip) {
@@ -818,7 +886,6 @@ public class Logic {
                 } catch (IOException e) {
                     System.out.println("Failed to update meal history: " + e.getMessage());
                 }
-                // Write back all lines except today's entry
                 try (BufferedWriter bw = new BufferedWriter(new FileWriter(mealsFile, false))) {
                     for (String l : lines) {
                         bw.write(l);
@@ -827,13 +894,17 @@ public class Logic {
                 } catch (IOException e) {
                     System.out.println("Failed to update meal history: " + e.getMessage());
                 }
-                // Now continue to input meals as usual
-                s.nextLine(); // flush buffer
+                alreadySet = false;
             } else {
                 return;
             }
         }
 
+        StringBuilder summary = new StringBuilder();
+        double totalCalories = 0;
+
+        // Input meals
+        String[] times = { "Breakfast", "Lunch", "Dinner", "Snack" };
         for (String meal : times) {
             System.out.print("Enter your " + meal + " (- to skip): ");
             String food = s.next() + s.nextLine();
@@ -921,16 +992,21 @@ public class Logic {
         System.out.println("==============================");
         do {
             System.out.print("Enter your target weight (kg): ");
-            targetWeight = s.nextInt();
-            s.nextLine();
-            if (targetWeight <= 0) {
-                System.out.println("Invalid target weight. Please enter a positive number.");
-                Running = true;
-            } else if (targetWeight >= currentUser.getBeratBadan()) {
-                System.out.println("Target weight must be less than your current weight.");
-                Running = true;
-            } else {
-                Running = false;
+            try {
+                targetWeight = s.nextInt();
+                s.nextLine();
+                if (targetWeight <= 0) {
+                    System.out.println("Invalid target weight. Please enter a positive number.");
+                    Running = true;
+                } else if (targetWeight >= currentUser.getBeratBadan()) {
+                    System.out.println("Target weight must be less than your current weight.");
+                    Running = true;
+                } else {
+                    Running = false;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                s.nextLine();
             }
         } while (Running);
         currentUser.setTargetWeight(targetWeight);
@@ -951,9 +1027,23 @@ public class Logic {
             System.out.println("4. Weight: " + currentUser.getBeratBadan() + " kg");
             System.out.println("5. Difficulty Level: " + currentUser.getLevel());
             System.out.println("0. Exit to Main Menu");
-            System.out.print("> ");
-            int choice = s.nextInt();
-            s.nextLine();
+            int choice = -1;
+            boolean valid = false;
+            do {
+                System.out.print("> ");
+                try {
+                    choice = s.nextInt();
+                    s.nextLine();
+                    if (choice >= 0 && choice <= 5) {
+                        valid = true;
+                    } else {
+                        System.out.println("Invalid choice. Please enter a number between 0 and 5.");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please enter a number between 0 and 5.");
+                    s.nextLine();
+                }
+            } while (!valid);
 
             switch (choice) {
                 case 1:
@@ -969,14 +1059,34 @@ public class Logic {
                     System.out.println("Password updated successfully.");
                     break;
                 case 3:
-                    System.out.print("Enter your new age: ");
-                    int newUsia = s.nextInt();
+                    int newUsia = 0;
+                    while (true) {
+                        System.out.print("Enter your new age: ");
+                        try {
+                            newUsia = s.nextInt();
+                            s.nextLine();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                            s.nextLine();
+                        }
+                    }
                     currentUser.setUsia(newUsia);
                     System.out.println("Age updated successfully.");
                     break;
                 case 4:
-                    System.out.print("Enter your new weight (kg): ");
-                    double newBeratBadan = s.nextDouble();
+                    double newBeratBadan = 0;
+                    while (true) {
+                        System.out.print("Enter your new weight (kg): ");
+                        try {
+                            newBeratBadan = s.nextDouble();
+                            s.nextLine();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                            s.nextLine();
+                        }
+                    }
                     currentUser.setBeratBadan(newBeratBadan);
                     System.out.println("Weight updated successfully.");
                     SetWeightTarget();
@@ -1000,9 +1110,22 @@ public class Logic {
                             System.out.println((i + 1) + ". " + levels[i]);
                         }
                     }
-                    System.out.print("> ");
-                    int levelchoice = s.nextInt();
-
+                    int levelchoice = 0;
+                    while (true) {
+                        System.out.print("> ");
+                        try {
+                            levelchoice = s.nextInt();
+                            s.nextLine();
+                            if (levelchoice >= 1 && levelchoice <= 3) {
+                                break;
+                            } else {
+                                System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                            s.nextLine();
+                        }
+                    }
                     switch (levelchoice) {
                         case 1:
                             System.out.println("You have chosen Beginner level.");
@@ -1019,6 +1142,7 @@ public class Logic {
                         default:
                             break;
                     }
+                    break;
                 case 0:
                     Running = false;
                     break;
