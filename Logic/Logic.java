@@ -291,7 +291,7 @@ public class Logic {
             System.out.println("|3. View Workout History          |");
             System.out.println("|---------------------------------|");
             System.out.println("|4. Set your Daily Meals          |");
-            System.out.println("|5. Set Your Weight Target        |");
+            System.out.println("|5. Set your Weight Target        |");
             System.out.println("|---------------------------------|");
             System.out.println("|6. Update User Profile           |");
             System.out.println("|0. Logout                        |");
