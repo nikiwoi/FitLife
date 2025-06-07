@@ -463,49 +463,123 @@ public class Logic {
             }
         }
 
-        System.out.print("Are you done with your workout (Y/N)? ");
-        String response = s.next() + s.nextLine();
-        while (!response.equalsIgnoreCase("Y") && !response.equalsIgnoreCase("N")) {
-            System.out.println("Invalid input. Please enter 'Y' or 'N'.");
-            response = s.next() + s.nextLine();
-        }
-        if (response.equalsIgnoreCase("Y")) {
-            int totalKalori = 0;
-            for (int i = 0; i < WarmUpCount; i++) {
-                if (warmUp.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                    totalKalori += warmUp.get(i).getKaloriPerLatihan()
-                            * ((RepetitionLatihan) warmUp.get(i)).getRepetition();
-                } else if (warmUp.get(i).getTipeLatihan().equalsIgnoreCase("Duration")) {
-                    totalKalori += warmUp.get(i).getKaloriPerLatihan()
-                            * ((DurationLatihan) warmUp.get(i)).getDuration();
+        System.out.println();
+        boolean workoutMenu = true;
+        while (workoutMenu) {
+            System.out.println();
+            System.out.println("=== Workout Menu ===");
+            System.out.println("1. View Workout Steps");
+            System.out.println("2. View Workout Benefits");
+            System.out.println("3. Done with Workout");
+            System.out.println("0. Back to Main Menu");
+            int choice = -1;
+            boolean valid = false;
+            do {
+                System.out.print("> ");
+                try {
+                    choice = s.nextInt();
+                    s.nextLine();
+                    if (choice >= 0 && choice <= 3) {
+                        valid = true;
+                    } else {
+                        System.out.println("Invalid choice. Please enter a number between 0 and 3.");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please enter a number between 0 and 3.");
+                    s.nextLine();
                 }
+            } while (!valid);
+
+            switch (choice) {
+                case 1:
+                    System.out.println();
+                    System.out.println("=== Workout Steps ===");
+                    System.out.println();
+                    System.out.println("Warm-Up:");
+                    for (int i = 0; i < WarmUpCount; i++) {
+                        System.out.println((i + 1) + ". " + warmUp.get(i).getNamaLatihan());
+                        System.out.println("   Step: " + warmUp.get(i).getDeskripsiLatihan());
+                    }
+                    System.out.println();
+                    System.out.println("Main Workout:");
+                    for (int i = 0; i < MainWorkoutCount; i++) {
+                        System.out.println((i + 1) + ". " + mainWorkout.get(i).getNamaLatihan());
+                        System.out.println("   Step: " + mainWorkout.get(i).getDeskripsiLatihan());
+                    }
+                    System.out.println();
+                    System.out.println("Cooldown:");
+                    for (int i = 0; i < CooldownCount; i++) {
+                        System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan());
+                        System.out.println("   Step: " + cooldown.get(i).getDeskripsiLatihan());
+                    }
+                    break;
+                case 2:
+                    System.out.println();
+                    System.out.println("=== Workout Benefits ===");
+                    System.out.println();
+                    System.out.println("Warm-Up:");
+                    for (int i = 0; i < WarmUpCount; i++) {
+
+                        System.out.println((i + 1) + ". " + warmUp.get(i).getNamaLatihan());
+                        System.out.println("   Benefit: " + warmUp.get(i).getManfaatLatihan());
+                    }
+                    System.out.println();
+                    System.out.println("Main Workout:");
+                    for (int i = 0; i < MainWorkoutCount; i++) {
+                        System.out.println((i + 1) + ". " + mainWorkout.get(i).getNamaLatihan());
+                        System.out.println("   Benefit: " + mainWorkout.get(i).getManfaatLatihan());
+                    }
+                    System.out.println();
+                    System.out.println("Cooldown:");
+                    for (int i = 0; i < CooldownCount; i++) {
+                        System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan());
+                        System.out.println("   Benefit: " + cooldown.get(i).getManfaatLatihan());
+                    }
+                    break;
+                case 3:
+                    int totalKalori = 0;
+                    for (int i = 0; i < WarmUpCount; i++) {
+                        if (warmUp.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                            totalKalori += warmUp.get(i).getKaloriPerLatihan()
+                                    * ((RepetitionLatihan) warmUp.get(i)).getRepetition();
+                        } else if (warmUp.get(i).getTipeLatihan().equalsIgnoreCase("Duration")) {
+                            totalKalori += warmUp.get(i).getKaloriPerLatihan()
+                                    * ((DurationLatihan) warmUp.get(i)).getDuration();
+                        }
+                    }
+                    for (int i = 0; i < MainWorkoutCount; i++) {
+                        if (mainWorkout.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                            totalKalori += mainWorkout.get(i).getKaloriPerLatihan()
+                                    * ((RepetitionLatihan) mainWorkout.get(i)).getRepetition();
+                        } else if (mainWorkout.get(i).getTipeLatihan().equalsIgnoreCase("Duration")) {
+                            totalKalori += mainWorkout.get(i).getKaloriPerLatihan()
+                                    * ((DurationLatihan) mainWorkout.get(i)).getDuration();
+                        }
+                    }
+                    for (int i = 0; i < CooldownCount; i++) {
+                        if (cooldown.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
+                            totalKalori += cooldown.get(i).getKaloriPerLatihan()
+                                    * ((RepetitionLatihan) cooldown.get(i)).getRepetition();
+                        } else if (cooldown.get(i).getTipeLatihan().equalsIgnoreCase("Duration")) {
+                            totalKalori += cooldown.get(i).getKaloriPerLatihan()
+                                    * ((DurationLatihan) cooldown.get(i)).getDuration();
+                        }
+                    }
+                    System.out.println("Workout completed! You have burned a total of " + totalKalori + " kcal.");
+                    String workoutSummary = generateWorkoutSummary(warmUp, mainWorkout, cooldown, WarmUpCount,
+                            MainWorkoutCount,
+                            CooldownCount, todayDate);
+                    workoutSummary += "Total calories burned: " + totalKalori + " kcal\n";
+                    saveWorkoutHistory(currentUser.getUsername(), workoutSummary);
+                    workoutMenu = false; // exit the loop after done
+                    break;
+                case 0:
+                    workoutMenu = false; // back to main menu
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
             }
-            for (int i = 0; i < MainWorkoutCount; i++) {
-                if (mainWorkout.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                    totalKalori += mainWorkout.get(i).getKaloriPerLatihan()
-                            * ((RepetitionLatihan) mainWorkout.get(i)).getRepetition();
-                } else if (mainWorkout.get(i).getTipeLatihan().equalsIgnoreCase("Duration")) {
-                    totalKalori += mainWorkout.get(i).getKaloriPerLatihan()
-                            * ((DurationLatihan) mainWorkout.get(i)).getDuration();
-                }
-            }
-            for (int i = 0; i < CooldownCount; i++) {
-                if (cooldown.get(i).getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                    totalKalori += cooldown.get(i).getKaloriPerLatihan()
-                            * ((RepetitionLatihan) cooldown.get(i)).getRepetition();
-                } else if (cooldown.get(i).getTipeLatihan().equalsIgnoreCase("Duration")) {
-                    totalKalori += cooldown.get(i).getKaloriPerLatihan()
-                            * ((DurationLatihan) cooldown.get(i)).getDuration();
-                }
-            }
-            System.out.println("Workout completed! You have burned a total of " + totalKalori + " kcal.");
-            String workoutSummary = generateWorkoutSummary(warmUp, mainWorkout, cooldown, WarmUpCount, MainWorkoutCount,
-                    CooldownCount, todayDate);
-            workoutSummary += "Total calories burned: " + totalKalori + " kcal\n";
-            saveWorkoutHistory(currentUser.getUsername(), workoutSummary);
-        } else {
-            System.out.println("Workout not completed. No history saved.");
-            return;
         }
     }
 
