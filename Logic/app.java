@@ -1,6 +1,6 @@
 package Logic;
 
-public class app {
+public class App {
     public static void main(String[] args) {
         Logic L = new Logic();
         L.run();
