@@ -289,13 +289,12 @@ public class Logic {
             System.out.println("|2. Generate This Week's Workout  |");
             System.out.println("|---------------------------------|");
             System.out.println("|3. View Calories Burnt Today     |");
-            System.out.println("|4. View Your Calories Progress   |");
-            System.out.println("|5. View Workout History          |");
+            System.out.println("|4. View Workout History          |");
             System.out.println("|---------------------------------|");
-            System.out.println("|6. Set your Daily Meals          |");
-            System.out.println("|7. Set Your Weight Target        |");
+            System.out.println("|5. Set your Daily Meals          |");
+            System.out.println("|6. Set Your Weight Target        |");
             System.out.println("|---------------------------------|");
-            System.out.println("|8. Update User Profile           |");
+            System.out.println("|7. Update User Profile           |");
             System.out.println("|0. Logout                        |");
             System.out.println(" ================================= ");
             boolean valid = false;
@@ -304,13 +303,13 @@ public class Logic {
                 try {
                     choice = s.nextInt();
                     s.nextLine();
-                    if (choice >= 0 && choice <= 8) {
+                    if (choice >= 0 && choice <= 7) {
                         valid = true;
                     } else {
-                        System.out.println("Invalid choice. Please enter a number between 0 and 8.");
+                        System.out.println("Invalid choice. Please enter a number between 0 and 7.");
                     }
                 } catch (InputMismatchException e) {
-                    System.out.println("Invalid input. Please enter a number between 0 and 8.");
+                    System.out.println("Invalid input. Please enter a number between 0 and 7.");
                     s.nextLine();
                 }
             } while (!valid);
@@ -326,18 +325,15 @@ public class Logic {
                     ViewCaloriesBurnt();
                     break;
                 case 4:
-                    ViewCaloriesProgress();
-                    break;
-                case 5:
                     ViewWorkoutHistory();
                     break;
-                case 6:
+                case 5:
                     CalculateDailyMeals();
                     break;
-                case 7:
+                case 6:
                     SetWeightTarget();
                     break;
-                case 8:
+                case 7:
                     UpdateUserProfile();
                     break;
                 case 0:
