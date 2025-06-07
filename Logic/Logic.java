@@ -492,49 +492,10 @@ public class Logic {
 
             switch (choice) {
                 case 1:
-                    System.out.println();
-                    System.out.println("=== Workout Steps ===");
-                    System.out.println();
-                    System.out.println("Warm-Up:");
-                    for (int i = 0; i < WarmUpCount; i++) {
-                        System.out.println((i + 1) + ". " + warmUp.get(i).getNamaLatihan());
-                        System.out.println("   Step: " + warmUp.get(i).getDeskripsiLatihan());
-                    }
-                    System.out.println();
-                    System.out.println("Main Workout:");
-                    for (int i = 0; i < MainWorkoutCount; i++) {
-                        System.out.println((i + 1) + ". " + mainWorkout.get(i).getNamaLatihan());
-                        System.out.println("   Step: " + mainWorkout.get(i).getDeskripsiLatihan());
-                    }
-                    System.out.println();
-                    System.out.println("Cooldown:");
-                    for (int i = 0; i < CooldownCount; i++) {
-                        System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan());
-                        System.out.println("   Step: " + cooldown.get(i).getDeskripsiLatihan());
-                    }
+                    ViewWorkoutSteps();
                     break;
                 case 2:
-                    System.out.println();
-                    System.out.println("=== Workout Benefits ===");
-                    System.out.println();
-                    System.out.println("Warm-Up:");
-                    for (int i = 0; i < WarmUpCount; i++) {
-
-                        System.out.println((i + 1) + ". " + warmUp.get(i).getNamaLatihan());
-                        System.out.println("   Benefit: " + warmUp.get(i).getManfaatLatihan());
-                    }
-                    System.out.println();
-                    System.out.println("Main Workout:");
-                    for (int i = 0; i < MainWorkoutCount; i++) {
-                        System.out.println((i + 1) + ". " + mainWorkout.get(i).getNamaLatihan());
-                        System.out.println("   Benefit: " + mainWorkout.get(i).getManfaatLatihan());
-                    }
-                    System.out.println();
-                    System.out.println("Cooldown:");
-                    for (int i = 0; i < CooldownCount; i++) {
-                        System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan());
-                        System.out.println("   Benefit: " + cooldown.get(i).getManfaatLatihan());
-                    }
+                    ViewWorkoutBenefits();
                     break;
                 case 3:
                     int totalKalori = 0;
@@ -580,6 +541,52 @@ public class Logic {
                     System.out.println("Invalid choice. Please try again.");
                     break;
             }
+        }
+    }
+
+    public void ViewWorkoutSteps() {
+        System.out.println();
+        System.out.println("=== Workout Steps ===");
+        System.out.println();
+        System.out.println("Warm-Up:");
+        for (int i = 0; i < WarmUpCount; i++) {
+            System.out.println((i + 1) + ". " + warmUp.get(i).getNamaLatihan());
+            System.out.println("   Step: " + warmUp.get(i).getDeskripsiLatihan());
+        }
+        System.out.println();
+        System.out.println("Main Workout:");
+        for (int i = 0; i < MainWorkoutCount; i++) {
+            System.out.println((i + 1) + ". " + mainWorkout.get(i).getNamaLatihan());
+            System.out.println("   Step: " + mainWorkout.get(i).getDeskripsiLatihan());
+        }
+        System.out.println();
+        System.out.println("Cooldown:");
+        for (int i = 0; i < CooldownCount; i++) {
+            System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan());
+            System.out.println("   Step: " + cooldown.get(i).getDeskripsiLatihan());
+        }
+    }
+
+    public void ViewWorkoutBenefits() {
+        System.out.println();
+        System.out.println("=== Workout Benefits ===");
+        System.out.println();
+        System.out.println("Warm-Up:");
+        for (int i = 0; i < WarmUpCount; i++) {
+            System.out.println((i + 1) + ". " + warmUp.get(i).getNamaLatihan());
+            System.out.println("   Benefit: " + warmUp.get(i).getManfaatLatihan());
+        }
+        System.out.println();
+        System.out.println("Main Workout:");
+        for (int i = 0; i < MainWorkoutCount; i++) {
+            System.out.println((i + 1) + ". " + mainWorkout.get(i).getNamaLatihan());
+            System.out.println("   Benefit: " + mainWorkout.get(i).getManfaatLatihan());
+        }
+        System.out.println();
+        System.out.println("Cooldown:");
+        for (int i = 0; i < CooldownCount; i++) {
+            System.out.println((i + 1) + ". " + cooldown.get(i).getNamaLatihan());
+            System.out.println("   Benefit: " + cooldown.get(i).getManfaatLatihan());
         }
     }
 
@@ -1198,7 +1205,7 @@ public class Logic {
                     break;
             }
         } while (Running);
-
+        
         saveUsersToTXT();
         System.out.println("User profile updated successfully.");
         System.out.println("Returning to main menu...");
