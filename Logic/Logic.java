@@ -596,9 +596,7 @@ public class Logic {
         String mealsFile = "./Data/" + currentUser.getUsername() + "_meals.txt";
 
         int totalCaloriesBurned = 0;
-        boolean workoutToday = false;
         double totalCaloriesIntake = 0;
-        boolean mealsToday = false;
 
         // Cek workout hari ini & ambil total kalori terbakar
         File historyFile = new File(workoutFile);
@@ -610,8 +608,7 @@ public class Logic {
                     if (line.startsWith("Workout Date:")) {
                         String dateStr = line.substring("Workout Date:".length()).trim();
                         isToday = dateStr.equals(today);
-                        if (isToday)
-                            workoutToday = true;
+                        if (isToday);
                     }
                     if (isToday && line.startsWith("Total calories burned:")) {
                         String[] parts = line.split(":");
@@ -640,7 +637,6 @@ public class Logic {
                 while ((line = br.readLine()) != null) {
                     if (line.trim().equals(today)) {
                         isToday = true;
-                        mealsToday = true;
                     } else if (isToday && line.startsWith("Total calories intake:")) {
                         String[] parts = line.split(":");
                         if (parts.length > 1) {
@@ -767,7 +763,6 @@ public class Logic {
             }
         }
 
-        // Calculate total net calories for days that exist in both lists
         double totalNetCalories = 0;
 
         for (int i = 0; i < workoutDates.size(); i++) {
@@ -777,7 +772,6 @@ public class Logic {
             totalNetCalories -= mealCalories.get(i);
         }
 
-        // Calculate target calories
         double weightToLose = currentWeight - targetWeight;
         double targetCalories = weightToLose * 7700;
 
