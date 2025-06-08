@@ -659,19 +659,6 @@ public class Logic {
             }
         }
 
-        // Validasi
-        if (!mealsToday && !workoutToday) {
-            System.out.println(
-                    "You must complete today's workout and set your daily meals before viewing calories burnt.");
-            return;
-        } else if (!mealsToday) {
-            System.out.println("You must set your daily meals before viewing calories burnt.");
-            return;
-        } else if (!workoutToday) {
-            System.out.println("You must complete today's workout before viewing calories burnt.");
-            return;
-        }
-
         // Tampilkan hasil
         System.out.println("=== Calories Summary for Today ===");
         System.out.println("Total calories burned (workout): " + totalCaloriesBurned + " kcal");
@@ -782,14 +769,12 @@ public class Logic {
 
         // Calculate total net calories for days that exist in both lists
         double totalNetCalories = 0;
+
+        for (int i = 0; i < workoutDates.size(); i++) {
+            totalNetCalories += workoutCalories.get(i);
+        }
         for (int i = 0; i < mealDates.size(); i++) {
-            String date = mealDates.get(i);
-            for (int j = 0; j < workoutDates.size(); j++) {
-                if (date.equals(workoutDates.get(j))) {
-                    totalNetCalories += workoutCalories.get(j) - mealCalories.get(i);
-                    break;
-                }
-            }
+            totalNetCalories -= mealCalories.get(i);
         }
 
         // Calculate target calories
@@ -835,7 +820,8 @@ public class Logic {
         }
     }
 
-    private String generateWorkoutSummary(ArrayList<Latihan> warmUp, ArrayList<Latihan> mainWorkout, ArrayList<Latihan> cooldown,
+    private String generateWorkoutSummary(ArrayList<Latihan> warmUp, ArrayList<Latihan> mainWorkout,
+            ArrayList<Latihan> cooldown,
             int WarmUpCount, int MainWorkoutCount, int CooldownCount, String todayDate) {
         StringBuilder workoutSummary = new StringBuilder();
         workoutSummary.append("Workout Date: ").append(todayDate).append("\n");
@@ -1205,7 +1191,7 @@ public class Logic {
                     break;
             }
         } while (Running);
-        
+
         saveUsersToTXT();
         System.out.println("User profile updated successfully.");
         System.out.println("Returning to main menu...");
