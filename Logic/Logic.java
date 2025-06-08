@@ -383,7 +383,7 @@ public class Logic {
 
     public void GenerateLatihanToday() {
         String todayDate = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        String workoutFile = "./Data/" + currentUser.getUsername() + "_history.txt";
+        String workoutFile = "./Data/" + currentUser.getUsername() + "_workout.txt";
         boolean alreadyDone = false;
 
         // Check if today's workout already exists
@@ -592,7 +592,7 @@ public class Logic {
 
     public void ViewCaloriesBurnt() {
         String today = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        String workoutFile = "./Data/" + currentUser.getUsername() + "_history.txt";
+        String workoutFile = "./Data/" + currentUser.getUsername() + "_workout.txt";
         String mealsFile = "./Data/" + currentUser.getUsername() + "_meals.txt";
 
         int totalCaloriesBurned = 0;
@@ -719,7 +719,7 @@ public class Logic {
         // Read workout history
         ArrayList<String> workoutDates = new ArrayList<>();
         ArrayList<Integer> workoutCalories = new ArrayList<>();
-        String workoutFile = "./Data/" + currentUser.getUsername() + "_history.txt";
+        String workoutFile = "./Data/" + currentUser.getUsername() + "_workout.txt";
         File historyFile = new File(workoutFile);
         if (historyFile.exists()) {
             try (BufferedReader br = new BufferedReader(new FileReader(workoutFile))) {
@@ -814,7 +814,7 @@ public class Logic {
     public void ViewWorkoutHistory() {
         System.out.println();
         System.out.println("=== Workout History ===");
-        String filePath = "./Data/" + currentUser.getUsername() + "_history.txt";
+        String filePath = "./Data/" + currentUser.getUsername() + "_workout.txt";
         File historyFile = new File(filePath);
         if (!historyFile.exists()) {
             System.out.println("No workout history found.");
@@ -835,48 +835,48 @@ public class Logic {
         }
     }
 
-    private String generateWorkoutSummary(List<Latihan> warmUp, List<Latihan> mainWorkout, List<Latihan> cooldown,
+    private String generateWorkoutSummary(ArrayList<Latihan> warmUp, ArrayList<Latihan> mainWorkout, ArrayList<Latihan> cooldown,
             int WarmUpCount, int MainWorkoutCount, int CooldownCount, String todayDate) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Workout Date: ").append(todayDate).append("\n");
-        sb.append("Warm-Up:\n");
+        StringBuilder workoutSummary = new StringBuilder();
+        workoutSummary.append("Workout Date: ").append(todayDate).append("\n");
+        workoutSummary.append("Warm-Up:\n");
         for (int i = 0; i < WarmUpCount; i++) {
             Latihan l = warmUp.get(i);
             if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                sb.append("- ").append(l.getNamaLatihan()).append(" (")
+                workoutSummary.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((RepetitionLatihan) l).getRepetition()).append(" reps)\n");
             } else if (l.getTipeLatihan().equalsIgnoreCase("Duration")) {
-                sb.append("- ").append(l.getNamaLatihan()).append(" (")
+                workoutSummary.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((DurationLatihan) l).getDuration()).append(" seconds)\n");
             }
         }
-        sb.append("Main Workout:\n");
+        workoutSummary.append("Main Workout:\n");
         for (int i = 0; i < MainWorkoutCount; i++) {
             Latihan l = mainWorkout.get(i);
             if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                sb.append("- ").append(l.getNamaLatihan()).append(" (")
+                workoutSummary.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((RepetitionLatihan) l).getRepetition()).append(" reps)\n");
             } else if (l.getTipeLatihan().equalsIgnoreCase("Duration")) {
-                sb.append("- ").append(l.getNamaLatihan()).append(" (")
+                workoutSummary.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((DurationLatihan) l).getDuration()).append(" seconds)\n");
             }
         }
-        sb.append("Cooldown:\n");
+        workoutSummary.append("Cooldown:\n");
         for (int i = 0; i < CooldownCount; i++) {
             Latihan l = cooldown.get(i);
             if (l.getTipeLatihan().equalsIgnoreCase("Repetition")) {
-                sb.append("- ").append(l.getNamaLatihan()).append(" (")
+                workoutSummary.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((RepetitionLatihan) l).getRepetition()).append(" reps)\n");
             } else if (l.getTipeLatihan().equalsIgnoreCase("Duration")) {
-                sb.append("- ").append(l.getNamaLatihan()).append(" (")
+                workoutSummary.append("- ").append(l.getNamaLatihan()).append(" (")
                         .append(((DurationLatihan) l).getDuration()).append(" seconds)\n");
             }
         }
-        return sb.toString();
+        return workoutSummary.toString();
     }
 
     private void saveWorkoutHistory(String username, String workoutSummary) {
-        String filePath = "./Data/" + username + "_history.txt";
+        String filePath = "./Data/" + username + "_workout.txt";
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
             bw.write(workoutSummary);
             bw.write("\n");
@@ -920,7 +920,7 @@ public class Logic {
             String change = s.next() + s.nextLine();
             if (change.equalsIgnoreCase("y")) {
                 // Remove today's entry from the file
-                List<String> lines = new ArrayList<>();
+                ArrayList<String> lines = new ArrayList<>();
                 try (BufferedReader br = new BufferedReader(new FileReader(mealsFile))) {
                     String line;
                     boolean skip = false;
@@ -954,7 +954,7 @@ public class Logic {
             }
         }
 
-        StringBuilder summary = new StringBuilder();
+        StringBuilder mealSummary = new StringBuilder();
         double totalCalories = 0;
 
         // Input meals
@@ -968,17 +968,17 @@ public class Logic {
             }
 
             double calories = getCaloriesAPI(food);
-            summary.append(meal).append(": ").append(food).append(" (").append(calories).append(" kcal)\n");
+            mealSummary.append(meal).append(": ").append(food).append(" (").append(calories).append(" kcal)\n");
             System.out.println("Calories for " + food + ": " + calories + " kcal");
             totalCalories += calories;
         }
 
-        summary.append("Total calories intake: ").append(totalCalories).append(" kcal\n");
-        System.out.println(summary.toString());
+        mealSummary.append("Total calories intake: ").append(totalCalories).append(" kcal\n");
+        System.out.println(mealSummary.toString());
 
         try (BufferedWriter bw = new BufferedWriter(
                 new FileWriter(mealsFile, true))) {
-            bw.write(todayDate + "\n" + summary.toString() + "\n");
+            bw.write(todayDate + "\n" + mealSummary.toString() + "\n");
         } catch (IOException e) {
             System.out.println("Failed to save meal history: " + e.getMessage());
         }
@@ -1004,14 +1004,14 @@ public class Logic {
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                StringBuilder response = new StringBuilder();
+                StringBuilder apiResponse = new StringBuilder();
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+                    apiResponse.append(inputLine);
                 }
                 in.close();
 
-                String resp = response.toString();
+                String resp = apiResponse.toString();
                 double total = 0;
                 int idx = 0;
                 while ((idx = resp.indexOf("\"nf_calories\"", idx)) != -1) {

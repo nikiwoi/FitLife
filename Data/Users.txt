@@ -12,5 +12,5 @@ g
 64.0
 176.0
 Intermediate
-50
+60
 
