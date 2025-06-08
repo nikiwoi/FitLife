@@ -1,11 +1,3 @@
-Niki
-niki123
-19
-64.0
-180.0
-Intermediate
-60
-
 w
 g
 19
@@ -13,4 +5,12 @@ g
 176.0
 Intermediate
 50
+
+Wesley
+Wesley123
+19
+66.0
+180.0
+Advanced
+60
 
