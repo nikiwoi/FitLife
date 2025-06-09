@@ -353,6 +353,7 @@ public class Logic {
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
+                    break;
             }
         } while (running);
     }
@@ -622,7 +623,8 @@ public class Logic {
                     if (line.startsWith("Workout Date:")) {
                         String dateStr = line.substring("Workout Date:".length()).trim();
                         isToday = dateStr.equals(today);
-                        if (isToday);
+                        if (isToday)
+                            ;
                     }
                     if (isToday && line.startsWith("Total calories burned:")) {
                         String[] parts = line.split(":");
