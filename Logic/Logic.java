@@ -627,8 +627,6 @@ public class Logic {
                     if (line.startsWith("Workout Date:")) {
                         String dateStr = line.substring("Workout Date:".length()).trim();
                         isToday = dateStr.equals(today);
-                        if (isToday)
-                            ;
                     }
                     if (isToday && line.startsWith("Total calories burned:")) {
                         String[] parts = line.split(":");
@@ -692,8 +690,23 @@ public class Logic {
         System.out.println("====================================");
         System.out.println("1. View Calories Progress");
         System.out.println("0. Back to Main Menu");
-        System.out.print("> ");
-        int choice = s.nextInt();
+        int choice = -1;
+        boolean valid = false;
+        do {
+            System.out.print("> ");
+            try {
+                choice = s.nextInt();
+                s.nextLine();
+                if (choice == 0 || choice == 1) {
+                    valid = true;
+                } else {
+                    System.out.println("Invalid choice. Please enter 0 or 1.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter 0 or 1.");
+                s.nextLine();
+            }
+        } while (!valid);
 
         if (choice == 1) {
             if (currentUser.getTargetWeight() == 0) {
@@ -703,8 +716,6 @@ public class Logic {
             ViewCaloriesProgress();
         } else if (choice == 0) {
             return;
-        } else {
-            System.out.println("Invalid choice. Returning to main menu.");
         }
     }
 
