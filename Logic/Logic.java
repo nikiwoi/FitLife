@@ -101,7 +101,6 @@ public class Logic {
         boolean Running = true;
         do {
             System.out.println();
-            System.out.println();
             System.out.println("=== Login ===");
             System.out.print("Enter Username: ");
             String username = s.next() + s.nextLine();
@@ -130,7 +129,6 @@ public class Logic {
 
     public void Register() {
         System.out.println();
-        System.out.println();
         System.out.println("=== Register a New Account ===");
         System.out.print("Enter Username: ");
         String username = s.next() + s.nextLine();
@@ -156,6 +154,10 @@ public class Logic {
             try {
                 usia = s.nextInt();
                 s.nextLine();
+                if (usia <= 0) {
+                    System.out.println("Age must be greater than 0.");
+                    continue;
+                }
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
@@ -169,6 +171,10 @@ public class Logic {
             try {
                 beratBadan = s.nextDouble();
                 s.nextLine();
+                if (beratBadan <= 0) {
+                    System.out.println("Weight must be greater than 0.");
+                    continue;
+                }
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
@@ -182,6 +188,10 @@ public class Logic {
             try {
                 tinggiBadan = s.nextDouble();
                 s.nextLine();
+                if (tinggiBadan <= 0) {
+                    System.out.println("Height must be greater than 0.");
+                    continue;
+                }
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
@@ -195,6 +205,10 @@ public class Logic {
             try {
                 targetWeight = s.nextInt();
                 s.nextLine();
+                if (targetWeight <= 0) {
+                    System.out.println("Target weight must be greater than 0.");
+                    continue;
+                }
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
@@ -1025,10 +1039,13 @@ public class Logic {
         System.out.println("Your current weight: " + currentUser.getBeratBadan() + " kg");
         System.out.println("==============================");
         do {
-            System.out.print("Enter your target weight (kg): ");
+            System.out.print("Enter your target weight (kg) (- to back): ");
             try {
-                targetWeight = s.nextInt();
-                s.nextLine();
+                String input = s.nextLine();
+                if (input.equals("-")) {
+                    return;
+                }
+                targetWeight = Integer.parseInt(input);
                 if (targetWeight <= 0) {
                     System.out.println("Invalid target weight. Please enter a positive number.");
                     Running = true;
@@ -1038,9 +1055,8 @@ public class Logic {
                 } else {
                     Running = false;
                 }
-            } catch (InputMismatchException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
-                s.nextLine();
             }
         } while (Running);
         currentUser.setTargetWeight(targetWeight);
