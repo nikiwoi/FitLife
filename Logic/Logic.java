@@ -377,6 +377,10 @@ public class Logic {
     }
 
     public void generateLatihan() {
+        warmUp.clear();
+        mainWorkout.clear();
+        cooldown.clear();
+
         DifficultyLatihan selected = null;
         for (DifficultyLatihan diff : allDifficulty) {
             if (diff.getDifficultyLevel().equalsIgnoreCase(currentUser.getLevel())) {
@@ -1117,6 +1121,10 @@ public class Logic {
                         try {
                             newUsia = s.nextInt();
                             s.nextLine();
+                            if (newUsia <= 0) {
+                                System.out.println("Age must be greater than 0.");
+                                continue;
+                            }
                             break;
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid input. Please enter a valid number.");
@@ -1133,6 +1141,10 @@ public class Logic {
                         try {
                             newBeratBadan = s.nextDouble();
                             s.nextLine();
+                            if (newBeratBadan <= 0) {
+                                System.out.println("Weight must be greater than 0.");
+                                continue;
+                            }
                             break;
                         } catch (InputMismatchException e) {
                             System.out.println("Invalid input. Please enter a valid number.");
